@@ -1,0 +1,33 @@
+ul ul li.nodeli{
+	list-style-type: none;
+	margin: 0;
+	padding: 2px 0px 2px 24px;
+	list-style: none;
+	background-image: url("images/node.png");
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 15px 15px;
+	vertical-align:middle;
+}
+ul.nw li
+{
+	list-style-type: none;
+	margin: 0;
+	padding: 2px 0px 2px 24px;
+	list-style: none;
+	background-image: url("images/nw.png");
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: 15px 15px;
+	vertical-align:middle;
+}
+ul ul li,ul ul li a{
+color:#008ecc;
+}
+ul ul li.commomconf
+{
+	color : pink;
+}
+ul ul li input[type="checkbox"] {
+	vertical-align:bottom;
+}
