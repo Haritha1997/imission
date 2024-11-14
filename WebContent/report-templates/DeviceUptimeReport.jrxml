@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.12.0.final using JasperReports Library version 6.12.1-ac0eebdb29e4c0985457bab279a6db744d661530  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="uptime" pageWidth="850" pageHeight="842" columnWidth="810" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="982de4f2-bcaf-45a6-86f4-fbaa2617a56d">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="470"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="523"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="631"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="355"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Report"/>
+	<parameter name="nodesel" class="java.lang.String"/>
+	<parameter name="choose" class="java.lang.String"/>
+	<parameter name="input" class="java.lang.String"/>
+	<parameter name="fromdate" class="java.lang.String"/>
+	<parameter name="todate" class="java.lang.String"/>
+	<parameter name="period" class="java.lang.String"/>
+	<parameter name="mergeqry" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select nd.nodelabel,nd.ipaddress,nout.slnumber,
+EXTRACT(EPOCH FROM to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS') 
+-(case when $P{period}='today' then (case when (nd.createdtime > to_timestamp($P{fromdate},'DD-MM-YYYY')) then nd.createdtime else to_timestamp($P{fromdate},'DD-MM-YYYY') end) else (case when (nd.createdtime > to_timestamp($P{fromdate},'DD-MM-YYYY')) then (case when nd.createdtime > (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) then (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) else  nd.createdtime end) else to_timestamp ($P{fromdate},'DD-MM-YYYY') end) end)) as total_time_sec, 
+sum(EXTRACT(EPOCH FROM (case when (nout.uptime is null or nout.uptime > (case when $P{period}='today' then to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS') else to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS') end)) then (case when $P{period}='today' then to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS') else to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS') end) else nout.uptime end ) 
+- (case when nout.downtime < to_timestamp($P{fromdate},'DD-MM-YYYY') then to_timestamp($P{fromdate},'DD-MM-YYYY') else nout.downtime end))) as tot_down_time_sec   
+from m2mnodeoutages nout inner join nodedetails nd on nd.slnumber = nout.slnumber where ($P!{mergeqry}) and nd.status in ($P!{nodesel}) and $P!{choose} like $P!{input} and (nout.downtime < to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) and (nout.uptime > to_timestamp($P{fromdate},'DD-MM-YYYY') or nout.uptime is null) group by nout.slnumber,nd.nodelabel,nd.ipaddress,nd.createdtime
+union 
+select nd.nodelabel,nd.ipaddress,nd.slnumber,
+EXTRACT(EPOCH FROM (case when $P{period}='today' then (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) else (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) end) 
+-(case when $P{period}='today' then (case when (nd.createdtime > to_timestamp($P{fromdate},'DD-MM-YYYY')) then nd.createdtime else to_timestamp($P{fromdate},'DD-MM-YYYY') end) else (case when (nd.createdtime > to_timestamp($P{fromdate},'DD-MM-YYYY')) then (case when nd.createdtime > (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) then (to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) else  nd.createdtime end) else to_timestamp ($P{fromdate},'DD-MM-YYYY') end) end)) as total_time_sec,
+0 as tot_down_time_sec
+from nodedetails nd where (($P!{mergeqry}) and nd.status in ($P!{nodesel})) and $P!{choose} like  $P!{input}
+and nd.slnumber not in(select slnumber from m2mnodeoutages where (downtime < to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')) and (uptime > to_timestamp($P{fromdate},'DD-MM-YYYY') or uptime is null))
+group by nd.slnumber,nd.nodelabel,nd.ipaddress,nd.createdtime order by slnumber]]>
+	</queryString>
+	<field name="nodelabel" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nodelabel"/>
+	</field>
+	<field name="ipaddress" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ipaddress"/>
+	</field>
+	<field name="slnumber" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="slnumber"/>
+	</field>
+	<field name="total_time_sec" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="total_time_sec"/>
+	</field>
+	<field name="tot_down_time_sec" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="tot_down_time_sec"/>
+	</field>
+	<variable name="down_percent" class="java.lang.String">
+		<variableExpression><![CDATA[new DecimalFormat("##.##").format ($F{total_time_sec}==0.0?0:($F{tot_down_time_sec}/$F{total_time_sec}*100))]]></variableExpression>
+	</variable>
+	<variable name="up_percent" class="java.lang.String">
+		<variableExpression><![CDATA[new DecimalFormat("##.##").format ($F{total_time_sec}==0.0?0:((($F{total_time_sec}-$F{tot_down_time_sec})/$F{total_time_sec})*100))]]></variableExpression>
+	</variable>
+	<variable name="down_dur" class="java.lang.String">
+		<variableExpression><![CDATA[(long)($F{tot_down_time_sec} /(24*3600))+" days "+(long)($F{tot_down_time_sec}/3600)%24+" hours "+ (long)($F{tot_down_time_sec}/60)%(60)+" min"]]></variableExpression>
+	</variable>
+	<variable name="up_dur" class="java.lang.String">
+		<variableExpression><![CDATA[(long)($F{total_time_sec}-$F{tot_down_time_sec}) /(24*3600)+" days "+((long)($F{total_time_sec}-$F{tot_down_time_sec})/3600)%24+" hours "+((long)($F{total_time_sec}-$F{tot_down_time_sec})/60)%(60)+" min"]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="112" splitType="Stretch">
+			<image onErrorType="Blank">
+				<reportElement x="593" y="6" width="194" height="50" uuid="6cf55359-91ea-4f57-8c0f-aae117755da2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA["assets/images/company-logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="16" width="270" height="30" forecolor="#E8473F" uuid="259c06b1-a881-40e8-ae41-bd01cfde0907"/>
+				<textElement>
+					<font size="22"/>
+				</textElement>
+				<text><![CDATA[Device UP Time Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="81" width="132" height="16" uuid="0fcca605-85cc-4cfa-a728-4ff426493f28"/>
+				<textFieldExpression><![CDATA[new java.util.Date( )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="190" y="80" width="175" height="18" uuid="7c5be2ea-c328-4962-8fe2-ab085191d9d3"/>
+				<textFieldExpression><![CDATA["Selected Option: "+$P{period}.trim()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="3" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="37" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement x="5" y="7" width="125" height="23" uuid="42661a64-d71e-4e98-92b8-d33e75b23f16"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Node Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="248" y="7" width="117" height="23" uuid="7f9381d1-c938-4d61-b142-cf58aacfd947">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Serial Number]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="36" width="810" height="1" uuid="74cb8897-e1b2-49e7-97e3-9ebb7c22d878"/>
+			</line>
+			<staticText>
+				<reportElement x="368" y="17" width="67" height="16" uuid="807289c0-6d17-4253-8fef-9e3dad2fd495">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Down %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="17" width="142" height="16" uuid="bc3e685c-7036-486e-9340-b4a82f8d0e27">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Down Duration]]></text>
+			</staticText>
+			<line>
+				<reportElement x="384" y="16" width="426" height="1" uuid="04359513-a9a1-4d73-a741-0ef453126712">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="546" y="0" width="120" height="16" uuid="d8c65831-be19-41f9-b441-a186fae1b7c4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Availability]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="593" y="18" width="62" height="16" uuid="8d3a3f94-72a5-4efc-bc59-6d58912c85d2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Up %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="665" y="17" width="140" height="16" uuid="ace162d9-5d25-4c5e-a781-f94775264263">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Up Duration]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="132" y="7" width="114" height="23" uuid="a5cb9d81-f2c0-4247-a511-ba30aa627909">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Connected Ip]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="810" height="1" isRemoveLineWhenBlank="true" uuid="f3b1d622-ccd4-4a13-bcac-5ee62fe92096"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="248" y="3" width="117" height="16" uuid="6b99600a-6c82-4cad-a53b-4747f01fa4f2">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{slnumber}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="452" y="3" width="142" height="16" uuid="3473db2c-3009-45a8-9a3e-baf8f7315965">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ef3655cb-131e-40c4-aa27-e2c43965c9a8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{down_dur}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="368" y="3" width="67" height="16" uuid="8248d660-1ad6-445d-af06-1dea1fb63a6b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{down_percent}==""?0:$V{down_percent}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="595" y="3" width="62" height="16" uuid="daf8a7d4-bfff-44c4-ae60-a0a90ddf8028"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{up_percent}==""?0:$V{up_percent}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="665" y="3" width="140" height="16" uuid="9db83d70-8a54-4723-851e-b7ff25114064">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ef3655cb-131e-40c4-aa27-e2c43965c9a8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{up_dur}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="3" width="125" height="16" uuid="e0748021-de69-46fb-95e7-20b87de78626">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="31b7b973-aa6d-428b-9c9f-28b7748f7784"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="132" y="3" width="114" height="16" uuid="473ddbe8-1770-4588-a2c9-62b9a9ed346d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="716168d0-657a-4a0b-950c-0371e503d2fa"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{ipaddress}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="18" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="-2" width="810" height="1" uuid="89604377-bc21-4dc5-8014-1cb13856b6b9"/>
+			</line>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="28" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

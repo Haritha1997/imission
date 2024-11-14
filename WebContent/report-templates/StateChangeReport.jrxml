@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.12.0.final using JasperReports Library version 6.12.1-ac0eebdb29e4c0985457bab279a6db744d661530  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StateChangeReport1" pageWidth="600" pageHeight="842" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6d083059-994d-41ba-9150-e003680c6e4d">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Report"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="423"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="570"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="638"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="348"/>
+	<parameter name="choose" class="java.lang.String">
+		<parameterDescription><![CDATA[Serial Number]]></parameterDescription>
+	</parameter>
+	<parameter name="input" class="java.lang.String">
+		<parameterDescription><![CDATA[Network]]></parameterDescription>
+	</parameter>
+	<parameter name="fromdate" class="java.lang.String">
+		<parameterDescription><![CDATA[DateRange]]></parameterDescription>
+	</parameter>
+	<parameter name="todate" class="java.lang.String"/>
+	<parameter name="mergeqry" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select mout.severity as severity, 
+mout.slnumber as slnumber, 
+mout.downtime as downtime,
+mout.uptime as uptime,
+cast(age(mout.uptime,mout.downtime) as varchar(255)) as persisttime 
+from m2mnodeoutages mout inner join nodedetails nd on nd.id = mout.nodeid
+and mout.downtime between to_date($P{fromdate},'DD-MM-YYYY') 
+and  to_timestamp($P{todate},'DD-MM-YYYY HH24:MI:SS')
+where $P!{choose}=$P{input} and ($P!{mergeqry})   order by slnumber]]>
+	</queryString>
+	<field name="severity" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="severity"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m2mnodeoutages"/>
+	</field>
+	<field name="slnumber" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="slnumber"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m2mnodeoutages"/>
+	</field>
+	<field name="downtime" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="downtime"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m2mnodeoutages"/>
+	</field>
+	<field name="uptime" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="uptime"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m2mnodeoutages"/>
+	</field>
+	<field name="persisttime" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="persisttime"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="159" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="181" y="-9" width="175" height="39" forecolor="#FF5100" uuid="24b0202a-1f0c-482a-95dd-c95907a6acc9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="26"/>
+				</textElement>
+				<text><![CDATA[State Change]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="90" y="140" width="101" height="18" forecolor="#000000" uuid="94590e10-1a33-4b3d-8d51-2c66e49a2076"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="67" width="77" height="19" uuid="8229a857-4d82-4778-8f81-4f6f68e51e26">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Serial No ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="95" y="67" width="86" height="19" uuid="27531256-2eea-479e-9675-46e3944ed6ec"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{slnumber}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="90" width="78" height="19" uuid="e5e04d6c-c5d6-4edb-8457-e8ea1bf0c0c4">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="140" width="85" height="19" uuid="9ef6442e-ee97-4d6b-9cb4-ed3747fe50c6">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report On :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="100" width="45" height="19" uuid="4e12e1c3-2aae-4dc6-88db-5ba5d1c4860d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[From :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="100" width="71" height="19" uuid="1b703eee-4b26-4a6e-9d5d-4711d4390c37">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4be981cc-d235-43bd-ba0a-1b052477d688"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fromdate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="140" y="100" width="34" height="19" uuid="5fa64fed-9841-48a6-b961-a9bee661c8b4">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[To :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="180" y="100" width="95" height="19" uuid="eb37ed31-d60a-4bfc-b5a2-3afd5482665c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4be981cc-d235-43bd-ba0a-1b052477d688"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{todate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="399" y="-9" width="11" height="39" forecolor="#3C8724" uuid="4f8ee505-3f79-41d6-948d-c148d84cdf31"/>
+				<textElement>
+					<font fontName="Times New Roman" size="32" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[i]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="408" y="-9" width="141" height="39" forecolor="#3C8724" uuid="0ba7f89c-fc31-4d19-8ecd-04bc86d634ab"/>
+				<textElement>
+					<font fontName="Times New Roman" size="32" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Mission]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="398" y="29" width="158" height="21" forecolor="#3C8724" uuid="fc544da0-b78c-4eb5-beb5-15f23d6ebb84"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Network Managment System]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="67" width="6" height="19" uuid="fa1dc968-b614-4378-9384-b46a658504b9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="560" height="1" uuid="de161292-09bd-4dbd-adc8-78bf12e8f975">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="4" y="3" width="136" height="16" uuid="6ce0ea51-608e-4397-911c-cd9105545fa9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f64a1ff5-768e-405e-a955-2e6ec62b38e0"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OutageTime]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="22" width="560" height="1" uuid="a3b785bc-c98d-43d9-b996-16c871e5f086">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="324" y="3" width="130" height="16" uuid="8d5eb2f3-b33e-4492-92cc-0c8421fc76d1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f64a1ff5-768e-405e-a955-2e6ec62b38e0"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Persistent Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="3" width="120" height="16" uuid="acfa2476-0c27-407c-b1b0-53ca36a9dfcd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f64a1ff5-768e-405e-a955-2e6ec62b38e0"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recover Time]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="5" y="3" width="136" height="16" uuid="ec280d3d-11aa-4609-807f-87f7374df019">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0d870ea4-551f-4869-928e-7a24a34f473d"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{downtime}==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($F{downtime})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="323" y="3" width="130" height="16" uuid="d959931c-77eb-4d5c-a94f-78593496dddb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fe65735b-1676-46c4-8373-7df2e89720bb"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{persisttime}==null?"":$F{persisttime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="3" width="120" height="16" uuid="bb2731ff-c5a1-4803-bc30-d267f9473f79">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9319dd55-f2d0-4c23-972f-6093f0cff8e6"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{uptime}==null?"":new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format($F{uptime})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="23" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
