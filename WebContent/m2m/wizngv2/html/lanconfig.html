@@ -1,0 +1,199 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/lan.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  var iprows = 1;
+var customdns = 4;
+
+function validateLanIpConfig() {
+	var alertmsg = "";
+	var table = document.getElementById("ipconfig");
+	var rows = table.rows;
+	var valid;
+	for (var i = 2; i < rows.length; i++) {
+		var cols = rows[i].cells;
+		var ipaddress = cols[1].childNodes[0].childNodes[0];
+		var subnet = cols[1].childNodes[2].childNodes[0];
+		valid = validateIP(ipaddress.id, true, "IPv4 Address");
+		if (!valid) {
+			alertmsg += (i - 1);
+			if (i == 2) alertmsg += "st";
+			else if (i == 3) alertmsg += "nd";
+			else if (i == 4) alertmsg += "rd";
+			else alertmsg += "th";
+			if (ipaddress.value.trim() == "") alertmsg += " IPv4 Address should not be empty\n";
+			else alertmsg += " IPv4 Address is not valid\n";
+		}
+		valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+		if (!valid) {
+			alertmsg += (i - 1);
+			if (i == 2) alertmsg += "st";
+			else if (i == 3) alertmsg += "nd";
+			else if (i == 4) alertmsg += "rd";
+			else alertmsg += "th";
+			if (subnet.value.trim() == "") alertmsg += " IPv4 Subnet Address should not be empty\n";
+			else alertmsg += " IPv4 Subnet Address is not valid\n";
+		}
+	}
+	var ipgw = document.getElementById("ipv4gw");
+	var ipbc = document.getElementById("ipv4bc");
+	valid = validateIP("ipv4gw", false, "IPv4 Gateway");
+	if (!valid) {
+		if (ipgw.value.trim() == "") alertmsg += "IPv4 Gateway should not be empty\n";
+		else alertmsg += "IPv4 Gateway is not valid\n";
+	}
+	valid = validateIP("ipv4bc", false, "IPv4 Broadcast");
+	if (!valid) {
+		if (ipbc.value.trim() == "") alertmsg += "IPv4 Broadcast should not be empty\n";
+		else alertmsg += "IPv4 Broadcast is not valid\n";
+	}
+	var mtu = document.getElementById("mtu");
+	valid = validateRange("mtu", false, "MTU");
+	if (!valid) {
+		if (mtu.value.trim() == "") alertmsg += "MTU should not be empty\n";
+		else alertmsg += "MTU is not valid\n";
+	}
+	var metric = document.getElementById("metric");
+	valid = validateRange("metric", false, "Metric");
+	if (!valid) {
+		if (metric.value.trim() == "") alertmsg += "Metric should not be empty\n";
+		else alertmsg += "Metric is not valid\n";
+	}
+	var ipconfigtable = document.getElementById("ipconfig1");
+	var ipconfigrows = ipconfigtable.rows;
+	for (var j = 4; j < ipconfigrows.length; j++) {
+		var ipcols = ipconfigrows[j].cells;
+		var customdns = ipcols[1].childNodes[0].childNodes[0];
+		valid = validateIP(customdns.id, false, "Custom DNS Server");
+		if (!valid) {
+			if (customdns.value.trim() == "") alertmsg += "Custom DNS Server-" + (j - 3) + " should not be empty\n";
+			else alertmsg += "Custom DNS Server-" + (j - 3) + " is not valid\n";
+		}
+	}
+	var dhcpnetmask = document.getElementById("netmask");
+	valid = validateIP("netmask", false, "IPv4 Netmask");
+	if (!valid) {
+		if (dhcpnetmask.value.trim() == "") alertmsg += "IPv4 Netmask should not be empty\n";
+		else alertmsg += "IPv4 Netmask is not valid\n";
+	}
+	var leaseobj = document.getElementById("leasetime");
+	valid = validateLeaseTime(leaseobj.id, true, "Lease time");
+	if (!valid) {
+		if (leaseobj.value.trim() == "") alertmsg += "Lease time in the row " + i + " should not be empty\n";
+		else alertmsg += "Lease time in the row " + i + " is not valid\n";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	</script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=LanAddressProcess.cgi" method="post" onsubmit="return validateLanIpConfig()">
+         <br>
+         <p class="style5" align="center">LAN IP Configuration</p>
+         <br>
+         <table class="borderlesstab nobackground" id="WiZConf" align="center" style="width:400px;margin-bottom:0px;">
+            <tbody>
+               <tr style="padding:0px;margin:0px;">
+                  <td style="padding:0px;margin:0px;">
+                     <ul id="lanconfigdiv">
+                        <li><a class="casesense lanconfiguration" onclick="showDivision('ipconfigpage')" id="hilightthis">IP Config</a></li>
+                        <li><a class="casesense lanconfiguration" onclick="showDivision('dhcp_serverpage')" id="">DHCP Server</a></li>
+                     </ul>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div id="ipconfigpage" align="center" style="margin: 0px; display: inline;">
+            <table class="borderlesstab" id="ipconfig" align="center" style="width:400px;">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>MAC Address</td>
+                     <td style="position:relative; left:4px;">00:22:85:aa:bb:cc</td>
+                  </tr>
+               </tbody>
+            </table>
+            <table class="borderlesstab" style="width:400px;" align="center" id="ipconfig1">
+               <tbody>
+                  <tr>
+                     <td width="200">IPv4 Gateway</td>
+                     <td width="200"><input type="text" name="ipv4gw" id="ipv4gw" value="" maxlength="256" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateIP('ipv4gw',false,'IPv4 Gateway')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">IPv4 Broadcast</td>
+                     <td width="200"><input type="text" name="ipv4bc" id="ipv4bc" value="" maxlength="256" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateIP('ipv4bc',false,'IPv4 Broadcast')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">MTU</td>
+                     <td width="200"><input type="number" name="mtu" id="mtu" placeholder="1500" value="" min="1" max="9000" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('mtu',false,'MTU')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">Metric</td>
+                     <td width="200"><input type="number" name="metric" id="metric" placeholder="0" value="" min="1" max="255" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('metric',false,'Metric')"></td>
+                  </tr> 
+               </tbody>
+            </table>
+         </div>
+         <div id="dhcp_serverpage" align="center" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:400px;" align="center" id="dhcpserver">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Activation</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="dhcpActvtn" id="dhcpActvtn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Start</td>
+                     <td><input type="number" name="start" id="start" value="100" min="0" max="2147483647" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Limit</td>
+                     <td><input type="number" name="limit" id="limit" value="150" min="1" max="2147483647" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Lease Time</td>
+                     <td><input type="text" name="leasetime" id="leasetime" value="12h" maxlength="64" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateLeaseTime('leasetime',true,'leasetime')"></td>
+                  </tr>
+                  <tr>
+                     <td title="Dynamically allocate DHCP addresses for clients. If disabled, only clients having static leases will be served.">Dynamic DHCP</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="dynamicdhcp" id="dynamicdhcp" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td title="Force DHCP on this network even if another server is detected.">Force</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="force" id="force" style="vertical-align:middle"><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td title="Override the netmask sent to clients. Normally it is calculated from the subnet that is served.">IPv4 Netmask</td>
+                     <td><input type="text" name="netmask" id="netmask" value="" maxlength="256" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateIP('netmask',false,'IPv4 Netmask')"></td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  showDivision('ipconfigpage');
+	  addIPRowAndChangeIcon(1);
+	  fillIProw(iprows,'192.168.1.1','255.255.255.0');
+	  findLastRowAndDisplayRemoveIcon();
+	  addCustomDNSRowAndChangeIcon(4);
+	  findCustomDNSLastRowAndDisplayRemoveIcon();
+	  </script>
+   </body>
+</html>

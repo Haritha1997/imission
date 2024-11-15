@@ -1,0 +1,362 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <link rel="stylesheet" type="text/css" href="css/multiselect/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="css/multiselect/bootstrap-multiselect.css">
+      <script type="text/javascript" src="js/multiselect/jquery1.12.4.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/multiselect/bootstrap3.3.6.min.js"></script>
+	  <script type="text/javascript" src="js/multiselect/bootstrap-multiselect.js"></script>
+	  <script type="text/javascript" src="js/traffic.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+      <style type="text/css">
+	  html {
+	overflow-y: scroll;
+}
+
+.multiselect-container {
+	width: 100% !important;
+}
+
+button.multiselect {
+	height: 25px;
+	margin: 0;
+	padding: 0;
+}
+
+.multiselect-container>.active>a,
+.multiselect-container>.active>a:hover,
+.multiselect-container>.active>a:focus {
+	background-color: grey;
+	width: 100%;
+}
+
+.multiselect-container>li.active>a>label,
+.multiselect-container>li.active>a:hover>label,
+.multiselect-container>li.active>a:focus>label {
+	color: #ffffff;
+	width: 100%;
+	white-space: normal;
+}
+
+.multiselect-container>li>a>label {
+	font-size: 12.5px;
+	text-align: left;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding-left: 25px;
+	white-space: normal;
+}
+
+.caret {
+	position: absolute;
+	left: 90%;
+	top: 40%;
+	vertical-align: middle;
+	border-top: 6px solid;
+	border-top: 6px solid\9;
+}
+</style>
+<script type="text/javascript">
+var previous = "";
+var previousICMP = "";
+
+function validateTraffic() {
+	var alertmsg = "";
+	var sipobj = document.getElementById("sipaddress");
+	var dipobj = document.getElementById("dipaddress");
+	var sportobj = document.getElementById("s_port");
+	var dportobj = document.getElementById("d_port");
+	var valid = validateIPOrNetwork("sipaddress", false, "Source IP Address");
+	if (!valid) {
+		if (sipobj.value.trim() == "") alertmsg += "Source IP Address should not be empty\n";
+		else alertmsg += "Source IP Address is not valid\n";
+	}
+	var valid = validateIPOrNetwork("dipaddress", false, "Destination IP Address");
+	if (!valid) {
+		if (dipobj.value.trim() == "") alertmsg += "Destination IP Address should not be empty\n";
+		else alertmsg += "Destination IP Address is not valid\n";
+	}
+	var valid = validatePortRange("s_port", "Source Port", false);
+	if (!valid) {
+		if (sportobj.value.trim() == "") alertmsg += "Source Port should not be empty\n";
+		else alertmsg += "Source Port is not valid\n";
+	}
+	var valid = validatePortRange("d_port", "Destination Port", false);
+	if (!valid) {
+		if (dportobj.value.trim() == "") alertmsg += "Destination Port should not be empty\n";
+		else alertmsg += "Destination Port is not valid\n";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+
+function displayprotos(id) {
+	var protoobj = document.getElementById(id);
+	var sprotrow = document.getElementById('sportrow');
+	var dprotrow = document.getElementById('dprotrow');
+	var icmprow = document.getElementById('icmprow');
+	sprotrow.style.display = 'none';
+	dprotrow.style.display = 'none';
+	icmprow.style.display = 'none';
+	var protos = protoobj.options;
+	var protocol;
+	for (var ind = 0; ind < protos.length; ind++) {
+		var obj = protos[ind];
+		if (obj.selected) {
+			protocol = obj.text;
+			if (protocol == "TCP" || protocol == "UDP") {
+				sprotrow.style.display = 'table-row';
+				dprotrow.style.display = 'table-row';
+			}
+			if (protocol == "ICMP") {
+				icmprow.style.display = 'table-row';
+			}
+		}
+	}
+}
+$(document).ready(function () {
+	$('#proto').multiselect({
+		buttonWidth: '150px',
+		numberDisplayed: 3,
+	});
+	$('#proto').change(function () {
+		if (previous == 'all') $('#proto').multiselect('deselect', ['all']);
+		else {
+			var delopt = "'" + previous + "'";
+			if ($('#proto :selected').length == 0) $('#proto').multiselect('deselect', [delopt]);
+		}
+		previous = $(this).val();
+	});
+	$('#matchicmp').multiselect({
+		buttonWidth: '150px',
+		numberDisplayed: 1,
+	});
+	$('#matchicmp').change(function () {
+		if (previousICMP == 'any') $('#matchicmp').multiselect('deselect', ['any']);
+		else {
+			var delopt = "'" + previousICMP + "'";
+			if ($('#matchicmp :selected').length == 0) $('#matchicmp').multiselect('deselect', [delopt]);
+		}
+		previousICMP = $(this).val();
+	});
+});
+
+function selectedProtos() {
+	var cbobj = document.getElementById("proto");
+	var lastopt = cbobj.options[cbobj.length - 1];
+	var opt_arr = [];
+	if (lastopt.selected) {
+		previous = 'all';
+		for (var i = 0; i < cbobj.length - 1; i++) {
+			cbobj.options[i].selected = false;
+			opt_arr.push(cbobj.options[i].value);
+		}
+		$('#proto').multiselect('deselect', opt_arr);
+	}
+}
+
+function selectedICMPOptions() {
+	var cbobj = document.getElementById("matchicmp");
+	var lastopt = cbobj.options[cbobj.length - 1];
+	var opt_arr = [];
+	if (lastopt.selected) {
+		previousICMP = 'any';
+		for (var i = 0; i < cbobj.length - 1; i++) {
+			cbobj.options[i].selected = false;
+			opt_arr.push(cbobj.options[i].value);
+		}
+		$('#matchicmp').multiselect('deselect', opt_arr);
+	}
+}
+</script>
+   </head>
+   <body>
+      <div style="min-width:96%">
+         <div>
+            <form action="Nomus.cgi?cgi=TrafficRulesConfigProcess=fdfdg.cgi" method="post" onsubmit="return validateTraffic()">
+               <br>
+               <p align="center" id="traffic" class="style5">Traffic Rules</p>
+               <br>
+               <table class="borderlesstab" id="WiZConf" align="center">
+                  <tbody>
+                     <tr>
+                        <th width="200px">Parameters</th>
+                        <th width="200px">Configuration</th>
+                     </tr>
+                     <tr>
+                        <td>Activation</td>
+                        <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="activation" name="activation" style="vertical-align:middle"><span class="slider round"></span></label></td>
+                     </tr>
+                     <tr id="instancename">
+                        <td>Instance Name</td>
+                        <td><input type="text" class="text" id="instancename" name="instancename" value="fdfdg" readonly=""></td>
+                     </tr>
+                     <tr id="protocol">
+                        <td>Protocol</td>
+                        <td>
+                           <select id="proto" name="proto" multiple="multiple" onchange="displayprotos('proto');selectedProtos()" style="display: none;">
+                              <option value="tcp">TCP</option>
+                              <option value="udp">UDP</option>
+                              <option value="icmp">ICMP</option>
+                              <option value="all">Any</option>
+                           </select>
+                           <div class="btn-group" style="width: 150px;">
+                              <button type="button" class="multiselect dropdown-toggle btn btn-default" data-toggle="dropdown" title="None selected" style="width: 150px; overflow: hidden; text-overflow: ellipsis; text-align: left; padding-left: 5px;"><span class="multiselect-selected-text">None selected</span> <b class="caret"></b></button>
+                              <ul class="multiselect-container dropdown-menu">
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="tcp"> TCP</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="udp"> UDP</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="icmp"> ICMP</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="all"> Any</label></a></li>
+                              </ul>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr id="icmprow" style="display: none;">
+                        <td>Match ICMP type</td>
+                        <td>
+                           <select id="matchicmp" name="matchicmp" multiple="multiple" onchange="selectedICMPOptions()" style="display: none;">
+                              <option value="address-mask-request">address-mask-request</option>
+                              <option value="address-mask-reply">address-mask-reply</option>
+                              <option value="communication-prohibited">communication-prohibited</option>
+                              <option value="destination-unreachable">destination-unreachable</option>
+                              <option value="echo-request">echo-request</option>
+                              <option value="echo-reply">echo-reply</option>
+                              <option value="fragmentation-needed">fragmentation-needed</option>
+                              <option value="host-precedence-violation">host-precedence-violation</option>
+                              <option value="host-prohibited">host-prohibited</option>
+                              <option value="host-redirect">host-redirect</option>
+                              <option value="host-unknown">host-unknown</option>
+                              <option value="host-unreachable">host-unreachable</option>
+                              <option value="ip-header-bad">ip-header-bad</option>
+                              <option value="network-prohibited">network-prohibited</option>
+                              <option value="network-redirect">network-redirect</option>
+                              <option value="network-unknown">network-unknown</option>
+                              <option value="network-unreachable">network-unreachable</option>
+                              <option value="parameter-problem">parameter-problem</option>
+                              <option value="port-unreachable">port-unreachable</option>
+                              <option value="precedence-cutoff">precedence-cutoff</option>
+                              <option value="protocol-unreachable">protocol-unreachable</option>
+                              <option value="redirect">redirect</option>
+                              <option value="required-option-missing">required-option-missing</option>
+                              <option value="source-quench">source-quench</option>
+                              <option value="source-route-failed">source-route-failed</option>
+                              <option value="time-exceeded">time-exceeded</option>
+                              <option value="timestamp-request">timestamp-request</option>
+                              <option value="timestamp-reply">timestamp-reply</option>
+                              <option value="TOS-host-redirect">TOS-host-redirect</option>
+                              <option value="TOS-host-unreachable">TOS-host-unreachable</option>
+                              <option value="TOS-network-redirect">TOS-network-redirect</option>
+                              <option value="TOS-network-unreachable">TOS-network-unreachable</option>
+                              <option value="ttl-zero-during-transit">ttl-zero-during-transit</option>
+                              <option value="ttl-zero-during-reassembly">ttl-zero-during-reassembly</option>
+                              <option value="router-advertisement">router-advertisement</option>
+                              <option value="router-solicitation">router-solicitation</option>
+                              <option value="any">any</option>
+                           </select>
+                           <div class="btn-group" style="width: 150px;">
+                              <button type="button" class="multiselect dropdown-toggle btn btn-default" data-toggle="dropdown" title="None selected" style="width: 150px; overflow: hidden; text-overflow: ellipsis; text-align: left; padding-left: 5px;"><span class="multiselect-selected-text">None selected</span> <b class="caret"></b></button>
+                              <ul class="multiselect-container dropdown-menu">
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="address-mask-request"> address-mask-request</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="address-mask-reply"> address-mask-reply</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="communication-prohibited"> communication-prohibited</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="destination-unreachable"> destination-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="echo-request"> echo-request</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="echo-reply"> echo-reply</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="fragmentation-needed"> fragmentation-needed</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="host-precedence-violation"> host-precedence-violation</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="host-prohibited"> host-prohibited</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="host-redirect"> host-redirect</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="host-unknown"> host-unknown</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="host-unreachable"> host-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="ip-header-bad"> ip-header-bad</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="network-prohibited"> network-prohibited</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="network-redirect"> network-redirect</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="network-unknown"> network-unknown</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="network-unreachable"> network-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="parameter-problem"> parameter-problem</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="port-unreachable"> port-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="precedence-cutoff"> precedence-cutoff</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="protocol-unreachable"> protocol-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="redirect"> redirect</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="required-option-missing"> required-option-missing</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="source-quench"> source-quench</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="source-route-failed"> source-route-failed</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="time-exceeded"> time-exceeded</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="timestamp-request"> timestamp-request</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="timestamp-reply"> timestamp-reply</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="TOS-host-redirect"> TOS-host-redirect</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="TOS-host-unreachable"> TOS-host-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="TOS-network-redirect"> TOS-network-redirect</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="TOS-network-unreachable"> TOS-network-unreachable</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="ttl-zero-during-transit"> ttl-zero-during-transit</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="ttl-zero-during-reassembly"> ttl-zero-during-reassembly</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="router-advertisement"> router-advertisement</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="router-solicitation"> router-solicitation</label></a></li>
+                                 <li><a tabindex="0"><label class="checkbox"><input type="checkbox" value="any"> any</label></a></li>
+                              </ul>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr id="sint">
+                        <td>Source Interface</td>
+                        <td>
+                           <select class="text" id="sinterface" name="sinterface">
+                              <option value="0" selected="">Device (output)</option>
+                              <option value="1">LAN</option>
+                              <option value="2">WAN</option>
+                              <option value="3">Cellular</option>
+                              <option value="4">Any (forward)</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr id="sipa">
+                        <td>Source IP Address</td>
+                        <td><input type="text" class="text" id="sipaddress" name="sipaddress" value="" placeholder="any" onfocusout="validateIPOrNetwork('sipaddress',false,'Source IP Address')"></td>
+                     </tr>
+                     <tr id="sportrow" style="display: none;">
+                        <td>Source Port</td>
+                        <td><input type="text" class="text" id="s_port" name="s_port" value="" placeholder="any" min="1" max="65535" onfocusout="validatePortRange('s_port','Source Port', false)"></td>
+                     </tr>
+                     <tr id="dint">
+                        <td>Destination Interface</td>
+                        <td>
+                           <select class="text" id="dinterface" name="dinterface">
+                              <option value="0" selected="">Device (input)</option>
+                              <option value="1">LAN</option>
+                              <option value="2">WAN</option>
+                              <option value="3">Cellular</option>
+                              <option value="4">Any (forward)</option>
+                           </select>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>Destination IP Address</td>
+                        <td><input type="text" class="text" id="dipaddress" name="dipaddress" value="" placeholder="any" onfocusout="validateIPOrNetwork('dipaddress',false,'Destination IP Address')"></td>
+                     </tr>
+                     <tr id="dprotrow" style="display: none;">
+                        <td>Destination Port</td>
+                        <td><input type="text" class="text" id="d_port" name="d_port" value="" min="1" max="65535" onfocusout="validatePortRange('d_port','Destination Port',false)"></td>
+                     </tr>
+                     <tr>
+                        <td>Action</td>
+                        <td>
+                           <select class="text" id="action" name="action">
+                              <option value="1" selected="">accept</option>
+                              <option value="2">reject</option>
+                              <option value="3">drop</option>
+                              <option value="4">don't track</option>
+                           </select>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+               <div align="center"><input type="submit" value="Apply" name="Apply" style="display:inline block" class="button"><input type="submit" value="Save &amp; Apply" name="Save" style="display:inline block" class="button"></div>
+            </form>
+            <script>displayprotos('proto');</script>
+         </div>
+      </div>
+   </body>
+</html>

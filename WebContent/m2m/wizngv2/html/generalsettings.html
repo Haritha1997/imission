@@ -1,0 +1,207 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	  <script type="text/javascript">
+	  function addRow(tablename, suffix) {
+	var table = document.getElementById(tablename);
+	var iprows = table.rows.length;
+	if (tablename == "WiZConf1") {
+		if (iprows == 6) {
+			alert("Maximum 5 Entries are allowed");
+			return false;
+		}
+		if (iprows == 1) document.getElementById("intrwcnt").value = iprows;
+		iprows = document.getElementById("intrwcnt").value;
+		document.getElementById("intrwcnt").value = Number(iprows) + 1;
+		var row = "<tr align=\"center\" id=\"intrwcnt" + iprows + "\">" + "<td style=\"text-align: center; vertical-align: middle;\">" + iprows + "</td>" + "<td align=\"center\" class=\"text1\" id=\"instancename" + iprows + "\" name=\"instancename" + suffix + "\" readonly></td>" + "<td><select name=\"input" + suffix + "\" id=\"input" + iprows + "\"><option value=\"1\">accept</option><option value=\"2\">reject</option><option value=\"3\">drop</option></select></td>" + "<td><select name=\"output" + suffix + "\" id=\"output" + iprows + "\"><option value=\"1\">accept</option><option value=\"2\">reject</option><option value=\"3\">drop</option></select></td>" + "<td><select name=\"forward" + suffix + "\" id=\"forward" + iprows + "\"><option value=\"1\">accept</option><option value=\"2\">reject</option><option value=\"3\">drop</option></select></td>" + "<td><label class=\"switch\"><input type=\"checkbox\" id=\"masq" + iprows + "\" name=\"masq" + suffix + "\" checked><span class=\"slider round\"></span></input></label></td>" + "<td hidden>0</td>" + "<td hidden>" + iprows + "</td>" + "</tr>";
+		$('#WiZConf1').append(row);
+	} else {
+		alert("No Row added");
+	}
+	var height = table.rows[1].cells[0].offsetHeight;
+	window.scrollBy(0, height);
+}
+
+function fillrow(rowid, instancename, input, output, forward, masq) {
+	document.getElementById('instancename' + rowid).innerHTML = instancename;
+	document.getElementById('input' + rowid).value = input;
+	document.getElementById('output' + rowid).value = output;
+	document.getElementById('forward' + rowid).value = forward;
+	document.getElementById('masq' + rowid).checked = masq;
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=GeneralSettingsProcess.cgi" method="post" onsubmit="">
+         <br>
+         <p class="style5" align="center">General Settings</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" style="width:800px;" align="center">
+            <tbody>
+               <tr>
+                  <th width="400px">Parameters</th>
+                  <th width="400px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Enable SYN-flood protection</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="firewallprot" id="firewallprot" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>SYN-flood rate (packets/second)</td>
+                  <td><input name="synflood_rate" type="number" class="text" value="25" id="synflood_rate" min="5" max="65535" onfocusout="validateRange('synflood_rate','SYN-flood Rate')"></td>
+               </tr>
+               <tr>
+                  <td>SYN-flood burst (packets/second)</td>
+                  <td><input name="synflood_burst" type="number" class="text" value="50" id="synflood_burst" min="5" max="65535" onfocusout="validateRange('synflood_burst','SYN-flood Burst')"></td>
+               </tr>
+               <tr>
+                  <td>Drop invalid packets</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="invalidpack" id="invalidpack" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>
+                     <div>Input</div>
+                  </td>
+                  <td>
+                     <select name="input" id="input" class="text">
+                        <option value="1" selected="">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     <div>Output</div>
+                  </td>
+                  <td>
+                     <select name="output" id="output" class="text">
+                        <option value="1" selected="">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     <div>Forward</div>
+                  </td>
+                  <td>
+                     <select name="forward" id="forward" class="text">
+                        <option value="1">accept</option>
+                        <option value="2" selected="">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <br><br>
+         <p class="style5" align="center">Interface Settings</p>
+         <br><input type="text" id="intrwcnt" name="intrwcnt" value="1" hidden="">
+         <table class="borderlesstab" id="WiZConf1" style="width:800px;" align="center">
+            <tbody>
+               <tr>
+                  <th style="text-align:center;" width="30px" align="center">S.No</th>
+                  <th style="text-align:center;" width="90px" align="center">Interface</th>
+                  <th style="text-align:center;" width="60px" align="center">Input</th>
+                  <th style="text-align:center;" width="60px" align="center">Output</th>
+                  <th style="text-align:center;" width="60px" align="center">Forward</th>
+                  <th style="text-align:center;" width="30px" align="center">Masquerading</th>
+               </tr>
+               <tr id="intrwcnt1" align="center">
+                  <td style="text-align: center; vertical-align: middle;">1</td>
+                  <td class="text1" id="instancename1" name="instancenameLAN" readonly="" align="center">LAN</td>
+                  <td>
+                     <select name="inputLAN" id="input1">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="outputLAN" id="output1">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="forwardLAN" id="forward1">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td><label class="switch"><input type="checkbox" id="masq1" name="masqLAN" checked=""><span class="slider round"></span></label></td>
+                  <td hidden="">0</td>
+                  <td hidden="">1</td>
+               </tr>
+               <tr id="intrwcnt2" align="center">
+                  <td style="text-align: center; vertical-align: middle;">2</td>
+                  <td class="text1" id="instancename2" name="instancenameWAN" readonly="" align="center">WAN</td>
+                  <td>
+                     <select name="inputWAN" id="input2">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="outputWAN" id="output2">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="forwardWAN" id="forward2">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td><label class="switch"><input type="checkbox" id="masq2" name="masqWAN" checked=""><span class="slider round"></span></label></td>
+                  <td hidden="">0</td>
+                  <td hidden="">2</td>
+               </tr>
+               <tr id="intrwcnt3" align="center">
+                  <td style="text-align: center; vertical-align: middle;">3</td>
+                  <td class="text1" id="instancename3" name="instancenameCellular" readonly="" align="center">Cellular</td>
+                  <td>
+                     <select name="inputCellular" id="input3">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="outputCellular" id="output3">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td>
+                     <select name="forwardCellular" id="forward3">
+                        <option value="1">accept</option>
+                        <option value="2">reject</option>
+                        <option value="3">drop</option>
+                     </select>
+                  </td>
+                  <td><label class="switch"><input type="checkbox" id="masq3" name="masqCellular" checked=""><span class="slider round"></span></label></td>
+                  <td hidden="">0</td>
+                  <td hidden="">3</td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  addRow('WiZConf1','LAN');
+	  fillrow(1, 'LAN', 1, 1, 2, false);
+
+	  </script>
+   </body>
+</html>

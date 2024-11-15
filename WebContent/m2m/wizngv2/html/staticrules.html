@@ -1,0 +1,65 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	  <script type="text/javascript" src="js/staticroute.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  var iprows = 1;
+
+function validateRoute() {
+	var alertmsg = "";
+	var table = document.getElementById("WiZConff");
+	var rows = table.rows;
+	for (var i = 1; i < rows.length; i++) {
+		var cols = rows[i].cells;
+		var targetobj = cols[2].childNodes[0];
+		var netmaskobj = cols[3].childNodes[0];
+		var gatewayobj = cols[4].childNodes[0];
+		var valid = validateIP(targetobj.id, true, "Target");
+		if (!valid) {
+			if (targetobj.value.trim() == "") alertmsg += "Target in the row " + i + " should not be empty\n";
+			else alertmsg += "Target in the row " + i + " is not valid\n";
+		}
+		valid = validateSubnetMask(netmaskobj.id, true, "Netmask");
+		if (!valid) {
+			if (netmaskobj.value.trim() == "") alertmsg += "Netmask in the row " + i + " should not be empty\n";
+			else alertmsg += "Netmask in the row " + i + " is not valid\n";
+		}
+		valid = validateGatewayIP(gatewayobj.id, false, "Gateway");
+		if (!valid) {
+			if (gatewayobj.value.trim() == "") alertmsg += "Gateway in the row " + i + " should not be empty\n";
+			else alertmsg += "Gateway in the row " + i + " is not valid\n";
+		}
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=StaticRouteProcess.cgi" method="post" onsubmit="return validateRoute()">
+         <br>
+         <p class="style5" align="center">Static Routes</p>
+         <br><input type="text" id="routesrwcnt" name="routesrwcnt" value="1" hidden="">
+         <table class="borderlesstab" id="WiZConff" align="center">
+            <tbody>
+               <tr>
+                  <th style="text-align:center;min-width:30px"> S.No</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> Interface</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> Target</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> Netmask</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> Gateway</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> Metric</th>
+                  <th style="text-align:center;max-width:160px;min-width:160px;"> MTU</th>
+                  <th style="text-align:center;min-width:40px"> Action</th>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"> <br><input class="button" type="button" id="add" value="Add" style="display:inline block" onclick="addRow('WiZConff')"><input type="submit" value="Apply" name="Apply" style="display:inline block" class="button"><input type="submit" value="Save &amp; Apply" name="Save" style="display:inline block" class="button"></div>
+      </form>
+   </body>
+</html>

@@ -1,0 +1,829 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link href="css/style.css" rel="stylesheet" type="text/css">
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript" src="js/policyconfig.js"></script>
+	  <script type="text/javascript" src="js/tracking.js"></script>
+	  <script type="text/javascript">
+	  function backupreference(id) {
+	var optnlvlobj = document.getElementById(id);
+	var optnlvl = optnlvlobj.options[optnlvlobj.selectedIndex].text;
+	var bckupobj = document.getElementById("backup");
+	var hidnlbl = document.getElementById("hidlbl");
+	if (optnlvl == "Backup") {
+		bckupobj.style.display = "block";
+		hidnlbl.style.display = "block";
+	} else {
+		bckupobj.style.display = "none";
+		hidnlbl.style.display = "none";
+	}
+}
+
+function selectIPSECCustom(id) {
+	var lclepselobj = document.getElementById(id);
+	var lclendpntvalue = lclepselobj.options[lclepselobj.selectedIndex].text;
+	if (lclendpntvalue == "Custom") {
+		lclepselobj.style.display = 'none';
+		var lcleptxtobj = document.getElementById("lclendpnt");
+		lcleptxtobj.style.display = 'inline';
+		lcleptxtobj.focus();
+	}
+}
+
+function selectRemoteEndCustom(id) {
+	var lclepselobj = document.getElementById(id);
+	var lclendpntvalue = lclepselobj.options[lclepselobj.selectedIndex].text;
+	if (lclendpntvalue == "Custom") {
+		lclepselobj.style.display = 'none';
+		var lcleptxtobj = document.getElementById("rmotendpnt");
+		lcleptxtobj.style.display = 'inline';
+		lcleptxtobj.focus();
+	}
+}
+
+function disableRouteBasedIPSec(id) {
+	var authmodeobj = document.getElementById(id);
+	var authmodevalue = authmodeobj.options[authmodeobj.selectedIndex].text;
+	var rtebsdipsecid = document.getElementById("rbipsec");
+	var rmtendpnt = document.getElementById("remoteend");
+	var rmtoptions = document.getElementById("rmtendpt");
+	var remtendpnt = document.getElementById("rmotendpnt");
+	if (authmodevalue == "PSK Server") {
+		rtebsdipsecid.checked = false;
+		rtebsdipsecid.disabled = true;
+		rmtendpnt.style.display = 'none';
+		rmtoptions.style.display = 'inline';
+	} else {
+		rtebsdipsecid.disabled = false;
+		rmtendpnt.style.display = 'inline';
+		rmtoptions.style.display = 'none';
+		remtendpnt.style.display = 'none';
+		remtendpnt.value = "";
+	}
+}
+
+function validOnshowIPSECComboBox(id, name) {
+	if (validatenameandip(id, false, name)) showIPSECComboBox(id);
+}
+
+function showIPSECComboBox(id) {
+	var loceptxtobj = document.getElementById(id);
+	var locepselobj = document.getElementById('localend');
+	if (loceptxtobj.value.trim() != "") {
+		if (locepselobj.length == 7) locepselobj.remove(0);
+		var newOption = document.createElement('option');
+		newOption.value = loceptxtobj.value.trim();
+		newOption.innerHTML = loceptxtobj.value.trim();
+		locepselobj.add(newOption, 0);
+	}
+	loceptxtobj.style.display = 'none';
+	locepselobj.style.display = 'inline';
+	locepselobj.selectedIndex = 0;
+}
+
+function validOnshowRemoteIPSECComboBox(id, name) {
+	var rmtepselctdobj = document.getElementById("rmtendpt");
+	if (validatenameandip(id, false, name)) {
+		showRemoteIPSECComboBox(id);
+	} else {
+		rmtepselctdobj.selectedIndex = 0;
+	}
+}
+
+function showRemoteIPSECComboBox(id) {
+	var rmteptxtobj = document.getElementById(id);
+	var rmtepselobj = document.getElementById('rmtendpt');
+	if (rmteptxtobj.value.trim() != "") {
+		if (rmtepselobj.length == 3) rmtepselobj.remove(0);
+		var newOption = document.createElement('option');
+		newOption.value = rmteptxtobj.value.trim();
+		newOption.innerHTML = rmteptxtobj.value.trim();
+		rmtepselobj.add(newOption, 0);
+	}
+	rmteptxtobj.style.display = 'none';
+	rmtepselobj.style.display = 'inline';
+	rmtepselobj.selectedIndex = 0;
+}
+
+function selectAction(id, checkempty, interval, timeout) {
+	var actionele = document.getElementById(id);
+	var intervalele = document.getElementById(interval);
+	var timeoutele = document.getElementById(timeout);
+	var action = actionele.value;
+	if (action == "2" || action == "3" || action == "4") {
+		if (checkempty) {
+			intervalele.title = "DPD Interval should not be empty";
+			timeoutele.title = "DPD Timeout should not be empty";
+			return false;
+		} else {
+			intervalele.style.outline = "initial";
+			timeoutele.style.outline = "initial";
+			return true;
+		}
+	} else {
+		intervalele.style.outline = "initial";
+		timeoutele.style.outline = "initial";
+		return true;
+	}
+}
+
+function isEmpty(id, name, action) {
+	var ele = document.getElementById(id);
+	var val = ele.value;
+	var actionele = document.getElementById(action);
+	var action = actionele.value;
+	if (action == "2" || action == "3" || action == "4") {
+		if (val == "") {
+			ele.style.outline = "thin solid red";
+			ele.title = name + " should be empty";
+			return false;
+		} else {
+			ele.style.outline = "initial";
+			ele.title = "";
+			return true;
+		}
+	} else {
+		ele.style.outline = "initial";
+		ele.title = "";
+		return true;
+	}
+}
+
+function validateRange(id, name) {
+	var rele = document.getElementById(id);
+	var val = rele.value;
+	var max = Number(rele.max);
+	var min = Number(rele.min);
+	if (val.trim() == "") {
+		rele.style.outline = "thin solid red";
+		rele.title = name + " should be integer in the range from " + min + " to " + max;
+		return false;
+	}
+	if (!isNaN(val)) {
+		if (val >= min && val <= max) {
+			rele.style.outline = "initial";
+			rele.title = "";
+			return true;
+		} else {
+			rele.style.outline = "thin solid red";
+			rele.title = name + " should be in the range from " + min + " to " + max;
+			return false;
+		}
+	} else {
+		rele.style.outline = "thin solid red";
+		rele.title = name + " should be integer in the range from " + min + " to " + max;
+		return false;
+	}
+}
+
+function validateTrackRange(id, name, checkbox) {
+	var rele = document.getElementById(id);
+	var activate = document.getElementById(checkbox);
+	if (activate.checked) {
+		var val = rele.value;
+		var max = Number(rele.max);
+		var min = Number(rele.min);
+		if (val.trim() == "") {
+			rele.style.outline = "thin solid red";
+			rele.title = name + " should be integer in the range from " + min + " to " + max;
+			return false;
+		}
+		if (!isNaN(val)) {
+			if (val >= min && val <= max) {
+				rele.style.outline = "initial";
+				rele.title = "";
+				return true;
+			} else {
+				rele.style.outline = "thin solid red";
+				rele.title = name + " should be in the range from " + min + " to " + max;
+				return false;
+			}
+		} else {
+			rele.style.outline = "thin solid red";
+			rele.title = name + " should be integer in the range from " + min + " to " + max;
+			return false;
+		}
+	} else {
+		rele.style.outline = "initial";
+	}
+}
+
+function gotoipsec() {
+	location.href = "ipsec.html";
+}
+
+function validateIpsec() {
+	var alertmsg = "";
+	var remoteend = document.getElementById("remoteend");
+	var localendobj = document.getElementById("localend");
+	var localend = localendobj.options[localendobj.selectedIndex].text;
+	var localendpnt = document.getElementById("lclendpnt");
+	var authmodeobj = document.getElementById("authmode");
+	var authtcnmode = authmodeobj.options[authmodeobj.selectedIndex].text;
+	var rendptobj = document.getElementById("rmtendpt");
+	var rendpt = rendptobj.options[rendptobj.selectedIndex].text;
+	var remotendpoint = document.getElementById("rmotendpnt");
+	var isakmplifetime = document.getElementById("ISAKMP_lifetime");
+	var ipseclifetime = document.getElementById("IPsec_lifetime");
+	var actionele = document.getElementById("DPD_status");
+	var intervalele = document.getElementById("DPD_Int");
+	var timeoutele = document.getElementById("DPD_to");
+	var action = actionele.value;
+	valid = validatenameandip("lclendpnt", true, "Local Endpoint");
+	if (localend == "Custom") {
+		if (!valid) {
+			if (localendpnt.value.trim() == "") alertmsg += "Local Endpoint should not be empty\n";
+			else alertmsg += "Local Endpoint is not valid\n";
+		}
+	}
+	var valid = validatenameandip("remoteend", true, "Remote Endpoint");
+	if (authtcnmode == "PSK Client") {
+		if (!valid) {
+			if (remoteend.value.trim() == "") alertmsg += "Remote Endpoint should not be empty\n";
+			else alertmsg += "Remote Endpoint is not valid\n";
+		}
+	}
+	valid = validatenameandip("rmotendpnt", true, "Remote Endpoint");
+	if (authtcnmode == "PSK Server") {
+		if (rendpt == "Custom") {
+			if (!valid) {
+				if (remotendpoint.value.trim() == "") alertmsg += "Remote Endpoint should not be empty\n";
+				else alertmsg += "Remote Endpoint is not valid\n";
+			}
+		}
+	}
+	valid = validateRange("ISAKMP_lifetime", "Life Time");
+	if (!valid) {
+		if (isakmplifetime.value.trim() == "") alertmsg += "Life Time(Secs) of ISAKMP SA should not be empty\n";
+		else alertmsg += "Life Time(Secs) of ISAKMP SA is not valid\n";
+	}
+	valid = validateRange("IPsec_lifetime", "Life Time");
+	if (!valid) {
+		if (ipseclifetime.value.trim() == "") alertmsg += "Life Time(Secs) of IPSec SA should not be empty\n";
+		else alertmsg += "Life Time(Secs) of IPSec SA is not valid\n";
+	}
+	valid = selectAction("DPD_status", true, "DPD_Int", "DPD_to");
+	if (action == "2" || action == "3" || action == "4") {
+		if (!valid) {
+			if (intervalele.value.trim() == "") {
+				alertmsg += "DPD Interval should not be empty\n";
+				intervalele.style.outline = "thin solid red";
+			} else {
+				intervalele.style.outline = "initial";
+			}
+			if (timeoutele.value.trim() == "") {
+				alertmsg += "DPD Timeout should not be empty\n";
+				timeoutele.style.outline = "thin solid red";
+			} else {
+				timeoutele.style.outline = "initial";
+			}
+		}
+	}
+	if (alertmsg.trim().length == 0) return "";
+	else {
+		return alertmsg;
+	}
+}
+
+function validateTracking() {
+	var alertmsg = "";
+	var activation = document.getElementById("tracking");
+	if (activation.checked) {
+		var trackip = document.getElementById("trackip");
+		var srcintfobj = document.getElementById("srcintfce");
+		var sourceinterface = srcintfobj.options[srcintfobj.selectedIndex].text;
+		var selectcustom = document.getElementById("interface");
+		var interval = document.getElementById("interval");
+		var retries = document.getElementById("retries");
+		var valid = validatenameandip("trackip", true, "Tracking IP");
+		if (!valid) {
+			if (trackip.value.trim() == "") alertmsg += "Tracking IP should not be empty\n";
+			else alertmsg += "Tracking IP is not valid\n";
+		}
+		valid = validatenameandip("interface", true, "Source Interface");
+		if (sourceinterface == "Custom") {
+			if (!valid) {
+				if (selectcustom.value.trim() == "") alertmsg += "Track Source Interface should not be empty\n";
+				else alertmsg += "Track Source Interface is not valid\n";
+			}
+		}
+		valid = validateTrackRange("interval", "Interval", "tracking");
+		if (!valid) {
+			if (interval.value.trim() == "") alertmsg += "Interval(Secs) should not be empty\n";
+			else alertmsg += "Interval(Secs) is not valid\n";
+		}
+		valid = validateTrackRange("retries", "Retries", "tracking");
+		if (!valid) {
+			if (retries.value.trim() == "") alertmsg += "Retries should not be empty\n";
+			else alertmsg += "Retries is not valid\n";
+		}
+	}
+	if (alertmsg.trim().length == 0) return "";
+	else {
+		return alertmsg;
+	}
+}
+
+function validateConfigs() {
+	var altmsg = "";
+	var ipsecmode = document.getElementById("ipsecmode");
+	altmsg += validateIpsec();
+	if (ipsecmode.value == "1") altmsg += validatePolicy();
+	altmsg += validateTracking();
+	if (altmsg.trim().length == 0) return true;
+	else {
+		alert(altmsg);
+		return false;
+	}
+}
+var lclnetiprows = 1;
+var remnetiprows = 1;
+var bpsnetiprows = 1;
+
+function validatePolicy() {
+	var alertmsg = "";
+	var table = document.getElementById("lnettab");
+	var rows = table.rows;
+	for (var i = 1; i < rows.length; i++) {
+		var cols = rows[i].cells;
+		var ipaddress = cols[1].childNodes[0].childNodes[0];
+		var subnet = cols[2].childNodes[0].childNodes[0];
+		var valid = validateIP(ipaddress.id, true, "IPv4 Address");
+		if (!valid) {
+			alertmsg += "Local Network " + i;
+			if (i == 1) alertmsg += "st";
+			else if (i == 2) alertmsg += "nd";
+			else if (i == 3) alertmsg += "rd";
+			else alertmsg += "th";
+			if (ipaddress.value.trim() == "") alertmsg += " IP Address should not be empty\n";
+			else alertmsg += " IP Address is not valid\n";
+		}
+		valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+		if (!valid) {
+			alertmsg += "Local Network " + i;
+			if (i == 1) alertmsg += "st";
+			else if (i == 2) alertmsg += "nd";
+			else if (i == 3) alertmsg += "rd";
+			else alertmsg += "th";
+			if (subnet.value.trim() == "") alertmsg += " Subnet Address should not be empty\n";
+			else alertmsg += " Subnet Address is not valid\n";
+		}
+	}
+	var table = document.getElementById("rnettab");
+	var rows = table.rows;
+	for (var j = 0; j < rows.length; j++) {
+		var cols = rows[j].cells;
+		var ipaddress = cols[1].childNodes[0].childNodes[0];
+		var subnet = cols[2].childNodes[0].childNodes[0];
+		var valid = validateIP(ipaddress.id, true, "IPv4 Address");
+		if (!valid) {
+			alertmsg += "Remote Network " + (j + 1);
+			if (j == 0) alertmsg += "st";
+			else if (j == 1) alertmsg += "nd";
+			else if (j == 2) alertmsg += "rd";
+			else alertmsg += "th";
+			if (ipaddress.value.trim() == "") alertmsg += " IP Address should not be empty\n";
+			else alertmsg += " IP Address is not valid\n";
+		}
+		valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+		if (!valid) {
+			alertmsg += "Remote Network " + (j + 1);
+			if (j == 0) alertmsg += "st";
+			else if (j == 1) alertmsg += "nd";
+			else if (j == 2) alertmsg += "rd";
+			else alertmsg += "th";
+			if (subnet.value.trim() == "") alertmsg += " Subnet Address should not be empty\n";
+			else alertmsg += " Subnet Address is not valid\n";
+		}
+	}
+	var lanbypass = document.getElementById("lanbypas");
+	if (lanbypass.checked) {
+		var table = document.getElementById("BypassLan");
+		var rows = table.rows;
+		for (var k = 0; k < rows.length; k++) {
+			var cols = rows[k].cells;
+			var ipaddress = cols[1].childNodes[0].childNodes[0];
+			var subnet = cols[2].childNodes[0].childNodes[0];
+			var valid = validateIP(ipaddress.id, true, "IPv4 Address");
+			if (!valid) {
+				alertmsg += "ByPass Network " + (k + 1);
+				if (k == 0) alertmsg += "st";
+				else if (k == 1) alertmsg += "nd";
+				else if (k == 2) alertmsg += "rd";
+				else alertmsg += "th";
+				if (ipaddress.value.trim() == "") alertmsg += " IP Address should not be empty\n";
+				else alertmsg += " IP Address is not valid\n";
+			}
+			valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+			if (!valid) {
+				alertmsg += "ByPass Network " + (k + 1);
+				if (k == 0) alertmsg += "st";
+				else if (k == 1) alertmsg += "nd";
+				else if (k == 2) alertmsg += "rd";
+				else alertmsg += "th";
+				if (subnet.value.trim() == "") alertmsg += " Subnet Address should not be empty\n";
+				else alertmsg += " Subnet Address is not valid\n";
+			}
+		}
+	}
+	if (alertmsg.trim().length == 0) return "";
+	else {
+		return alertmsg;
+	}
+}
+$(document).on('click', '.toggle-password', function () {
+	$(this).toggleClass("fa-eye fa-eye-slash");
+	var input = $("#preshared_key");
+	input.attr('type') === 'password' ? input.attr('type', 'text') : input.attr('type', 'password')
+});
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=IPSecConfigProcess=ipsec.cgi" method="post" onsubmit="return validateConfigs()">
+         <p align="center" class="style1">IPSec Configuration</p>
+         <table class="borderlesstab nobackground" style="width:800px;margin-bottom:0px;" id="WiZConf" align="center">
+            <tbody>
+               <tr style="padding:0px;margin:0px;">
+                  <td style="padding:0px;margin:0px;">
+                     <ul id="ipsecediv">
+                        <li><a class="casesense ipseclist" onclick="showDivision('configpage')" id="hilightthis">IPSec</a></li>
+                        <li><a class="casesense ipseclist" onclick="showDivision('policypage')" id="">Policies</a></li>
+                        <li><a class="casesense ipseclist" onclick="showDivision('trackingpage')" id="">Tracking</a></li>
+                     </ul>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div id="configpage" align="center" style="margin: 0px; display: inline;">
+            <table class="borderlesstab" style="width:800px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th colspan="4">
+                        <div align="center"><strong>General Configuration</strong></div>
+                     </th>
+                  </tr>
+                  <tr>
+                     <td>Activation</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="activation" id="activation" style="vertical-align:middle"><span class="slider round"></span></label></td>
+                     <td>Instance Name</td>
+                     <td><input type="text" class="text" id="instancename" name="instancename" value="ipsec" readonly=""></td>
+                  </tr>
+                  <tr>
+                     <td>Local Endpoint</td>
+                     <td>
+                        <div>
+                           <select name="localend" id="localend" class="text" onchange="selectIPSECCustom('localend')">
+                              <option value="%lan">LAN</option>
+                              <option value="%wan">WAN</option>
+                              <option value="%loopback">Loopback</option>
+                              <option value="%cellular">Cellular</option>
+                              <option value="%any" selected="">Any</option>
+                              <option value="6">Custom</option>
+                           </select>
+                        </div>
+                        <div>
+                           <input hidden="" id="lclendpnt" type="text" value="" class="text" list="configurations" onfocusout="validOnshowIPSECComboBox('lclendpnt','Local Endpoint')">
+                           <datalist id="configurations">
+                              <option>LAN</option>
+                              <option>WAN</option>
+                              <option>Loopback</option>
+                              <option>Cellular</option>
+                              <option>Any</option>
+                           </datalist>
+                        </div>
+                     </td>
+                     <td>Remote Endpoint</td>
+                     <td>
+                        <input type="text" class="text" name="remoteend" id="remoteend" value="" maxlength="256" onkeypress="return avoidSpace(event)" onfocusout="validatenameandip('remoteend',true,'Remote Endpoint')" style="display: inline;">
+                        <div>
+                           <select name="rmtendpt" hidden="" id="rmtendpt" class="text" onchange="selectRemoteEndCustom('rmtendpt')" style="display: none;">
+                              <option value="%any">Any</option>
+                              <option value="2">Custom</option>
+                              <option value="" selected=""></option>
+                           </select>
+                        </div>
+                        <div>
+                           <input hidden="" id="rmotendpnt" type="text" value="" class="text" list="configurations" onfocusout="validOnshowRemoteIPSECComboBox('rmotendpnt','Remote Endpoint')" style="display: none;">
+                           <datalist id="configurations">
+                              <option>LAN</option>
+                              <option>WAN</option>
+                              <option>Loopback</option>
+                              <option>Cellular</option>
+                              <option>Any</option>
+                           </datalist>
+                        </div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Local Identifier</td>
+                     <td><input type="text" class="text" name="localId" id="localId" value="" maxlength="256"></td>
+                     <td>Remote Identifier</td>
+                     <td><input type="text" class="text" name="remoteId" id="remoteId" value="" maxlength="256"></td>
+                  </tr>
+                  <tr>
+                     <td>Mode</td>
+                     <td>
+                        <select name="ipsecmode" id="ipsecmode" class="text">
+                           <option value="1" selected="">Tunnel</option>
+                           <option value="0">Transport</option>
+                        </select>
+                     </td>
+                     <td>
+                        <div>Operation Level<label hidden="" id="hidlbl" style="display: none;"><br>Backup Reference</label></div>
+                     </td>
+                     <td>
+                        <select name="oplevel" id="oplevel" class="text" onchange="backupreference('oplevel')">
+                           <option value="1" selected="">Main</option>
+                           <option value="2">Backup</option>
+                        </select>
+                        <div id="backup" hidden="" style="display: none;"><br><select name="bckupref" id="bckupref" class="text"></select></div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Auth Mode</td>
+                     <td>
+                        <select name="authmode" id="authmode" class="text" onchange="disableRouteBasedIPSec('authmode')">
+                           <option value="1" selected="">PSK Client</option>
+                           <option value="2">PSK Server</option>
+                        </select>
+                     </td>
+                     <td>Exchange Mode</td>
+                     <td>
+                        <select name="exmode" id="exmode" class="text"> 
+                           <option value="1" selected="">IKEv1-Main</option>
+                           <option value="2">IKEv1-Aggressive</option>
+                           <option value="3">IKEv2</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Route Based IPSec</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="rbipsec" id="rbipsec" style="vertical-align:middle"><span class="slider round"></span></label></td>
+                     <td>NAT Traversal</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="natt" id="natt" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <th colspan="4">
+                        <div align="center"><strong>Key Configuration</strong></div>
+                     </th>
+                  </tr>
+                  <tr>
+                     <td>PreShareKey</td>
+                     <td><input id="preshared_key" class="text" type="password" value="" name="preshared_key" maxlength="32"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-password"></span></td>
+                  </tr>
+                  <tr>
+                     <th colspan="4">
+                        <div align="center"><strong>ISAKMP SA Configuration</strong></div>
+                     </th>
+                  </tr>
+                  <tr>
+                     <td>Encryption</td>
+                     <td>
+                        <select name="ISAKMP_enc" id="ISAKMP_enc" class="text">
+                           <option value="1">DES</option>
+                           <option value="2" selected="">3DES</option>
+                           <option value="3">AES-128</option>
+                           <option value="4">AES-192</option>
+                           <option value="5">AES-256</option>
+                        </select>
+                     </td>
+                     <td>Hashing</td>
+                     <td>
+                        <select name="ISAKMP_hash" id="ISAKMP_hash" class="text">
+                           <option value="1" selected="">MD5</option>
+                           <option value="2">SHA1</option>
+                           <option value="3">SHA256</option>
+                           <option value="4">SHA384</option>
+                           <option value="5">SHA512</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>DH Group</td>
+                     <td>
+                        <select name="ISAKMP_grp" id="ISAKMP_grp" class="text">
+                           <option value="1">Modp768/1</option>
+                           <option value="2" selected="">Modp1024/2</option>
+                           <option value="5">Modp1536/5</option>
+                           <option value="14">Modp2048/14</option>
+                           <option value="15">Modp3072/15</option>
+                           <option value="16">Modp4096/16</option>
+                           <option value="17">Modp6144/17</option>
+                           <option value="18">Modp8192/18</option>
+                        </select>
+                     </td>
+                     <td>Life Time (Secs)</td>
+                     <td><input name="ISAKMP_lifetime" type="number" class="text" value="86400" id="ISAKMP_lifetime" min="120" max="2147483647" onfocusout="validateRange('ISAKMP_lifetime','Life Time')"></td>
+                  </tr>
+                  <tr>
+                     <th colspan="4">
+                        <div align="center"><strong>IPSec SA Configuration</strong></div>
+                     </th>
+                  </tr>
+                  <tr>
+                     <td>Encryption</td>
+                     <td>
+                        <select name="IPsec_enc" id="IPsec_enc" class="text">
+                           <option value="1">DES</option>
+                           <option value="2" selected="">3DES</option>
+                           <option value="3">AES-128</option>
+                           <option value="4">AES-192</option>
+                           <option value="5">AES-256</option>
+                        </select>
+                     </td>
+                     <td>Hashing</td>
+                     <td>
+                        <select name="IPsec_hash" id="IPsec_hash" class="text">
+                           <option value="1">MD5</option>
+                           <option value="2" selected="">SHA1</option>
+                           <option value="3">SHA256</option>
+                           <option value="4">SHA384</option>
+                           <option value="5">SHA512</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>PFS Group</td>
+                     <td>
+                        <select name="PFS_grp" id="PFS_grp" class="text">
+                           <option value="1">Modp768/1</option>
+                           <option value="2" selected="">Modp1024/2</option>
+                           <option value="5">Modp1536/5</option>
+                           <option value="14">Modp2048/14</option>
+                           <option value="15">Modp3072/15</option>
+                           <option value="16">Modp4096/16</option>
+                           <option value="17">Modp6144/17</option>
+                           <option value="18">Modp8192/18</option>
+                           <option value="0">Disable</option>
+                        </select>
+                     </td>
+                     <td>Life Time (Secs)</td>
+                     <td><input name="IPsec_lifetime" type="number" class="text" value="3600" id="IPsec_lifetime" min="120" max="2147483647" onkeypress="return avoidSpace(event)" onfocusout="validateRange('IPsec_lifetime','Life Time')"></td>
+                  </tr>
+                  <tr>
+                     <th colspan="4">
+                        <div align="center"><strong>Dead Peer Detection</strong></div>
+                     </th>
+                  </tr>
+                  <tr>
+                     <td>Action</td>
+                     <td>
+                        <select name="DPD_status" id="DPD_status" class="text" onchange="selectAction('DPD_status',true,'DPD_Int','DPD_to')">
+                           <option value="1" selected="">None</option>
+                           <option value="2">Clear</option>
+                           <option value="3">Hold</option>
+                           <option value="4">Restart</option>
+                        </select>
+                     </td>
+                     <td>Interval (Secs)</td>
+                     <td><input name="DPD_Int" type="number" class="text" value="" id="DPD_Int" min="5" max="3600" onkeypress="return avoidSpace(event)" onfocusout="isEmpty('DPD_Int','Interval','DPD_status')"></td>
+                  </tr>
+                  <tr>
+                     <td>Timeout (Secs)</td>
+                     <td colspan="3"><input name="DPD_to" type="number" class="text" value="" id="DPD_to" min="5" max="3600" onkeypress="return avoidSpace(event)" onfocusout="isEmpty('DPD_Int','Interval','DPD_status')"></td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div id="policypage" align="center" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:800px;" id="lnettab" align="center">
+               <tbody>
+                  <tr>
+                     <th>Parameters</th>
+                     <th>Network</th>
+                     <th>Subnet</th>
+                  </tr>
+                  <tr id="laniprow2">
+                     <td width="250px">
+                        <div>Local Network</div>
+                     </td>
+                     <td width="250px">
+                        <div><input type="text" class="text" id="lanip2" name="lanip2" onkeypress="return avoidSpace(event);" style="display:inline block" onfocusout="validateIP('lanip2',false,'IPv4 Address')"></div>
+                     </td>
+                     <td width="300px">
+                        <div><input type="text" class="text" id="lansn2" name="lansn2" onkeypress="return avoidSpace(event)" style="display:inline block" onfocusout="validateSubnetMask('lansn2',false,'Subnet Address')"><i class="fa fa-plus" id="add2" style="font-size: 10px; margin-left: 5px; color: green; display: inline;" onclick="addLocalNetworkAndChangeIcon(2)"></i><i class="fa fa-close" style="font-size: 10px; margin-left: 5px; color: red; display: none;" id="remove2" onclick="deleteTableLocalNetwork(2)"></i><input hidden="" id="row2" value="2"></div>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+            <table class="borderlesstab" style="width:800px;" id="rnettab" align="center">
+               <tbody>
+                  <tr id="plcyconfgrow2">
+                     <td width="250px">
+                        <div>Remote Network</div>
+                     </td>
+                     <td width="250px">
+                        <div><input type="text" class="text" id="rmip2" name="rmip2" onkeypress="return avoidSpace(event);" style="display:inline block" onfocusout="validateIP('rmip2',false,'IPv4 Address')"></div>
+                     </td>
+                     <td width="300px">
+                        <div><input type="text" class="text" id="rmsn2" name="rmsn2" onkeypress="return avoidSpace(event)" style="display:inline block;" onfocusout="validateSubnetMask('rmsn2',false,'Subnet Address')"><i class="fa fa-plus" id="add12" style="font-size: 10px; margin-left: 5px; color: green; display: inline;" onclick="addRemoteNetworkAndChangeIcon(2)"></i><i class="fa fa-close" style="font-size: 10px; margin-left: 5px; color: red; display: none;" id="remove12" onclick="deleteTableRemoteNetwork(2)"></i><input hidden="" id="row2" value="2"></div>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+            <table class="borderlesstab" style="width:800px;" id="WiZConfig" align="center">
+               <tbody>
+                  <tr>
+                     <td width="228px">ByPass-LAN</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="lanbypas" id="lanbypas" style="vertical-align:middle" onchange="showByPassLan('lanbypas','BypassLan')"><span class="slider round"></span></label></td>
+                  </tr>
+               </tbody>
+            </table>
+            <div align="center" style="width:800px;padding:0;margin:0;">
+               <table class="borderlesstab" style="width:800px;" id="BypassLan" align="center" hidden="">
+                  <tbody>
+                     <tr id="plcyconfgrow12">
+                        <td width="250px">
+                           <div>ByPass Network</div>
+                        </td>
+                        <td width="250px">
+                           <div><input type="text" class="text" id="bypasip2" name="bypasip2" onkeypress="return avoidSpace(event);" style="display:inline" onfocusout="validateIP('bypasip2',false,'IPv4 Address')"></div>
+                        </td>
+                        <td width="300px">
+                           <div><input type="text" class="text" id="bypassn2" name="bypassn2" onkeypress="return avoidSpace(event)" style="display:inline block;" onfocusout="validateSubnetMask('bypassn2',false,'Subnet Address')"><i class="fa fa-plus" id="add22" style="font-size: 10px; margin-left: 5px; color: green; display: inline;" onclick="addByPassNetworkAndChangeIcon(2)"></i><i class="fa fa-close" style="font-size: 10px; margin-left: 5px; color: red; display: none;" id="remove22" onclick="deleteTableByPassNetwork(2)"></i><input hidden="" id="row2" value="2"></div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div id="trackingpage" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:800px;" id="WiZConf" align="center">
+               <tbody>
+                  <tr>
+                     <th>Parameters</th>
+                     <th width="300">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Tracking</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="tracking" id="tracking" style="vertical-align:middle" onchange="deactivateTrack('tracking')"><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Tracking IP</td>
+                     <td><input type="text" class="text" name="trackip" id="trackip" value="" maxlength="256" onkeypress="return avoidSpace(event)" onfocusout="validatenameandip('trackip',true,'Tracking IP')"></td>
+                  </tr>
+                  <tr>
+                     <td>Source Interface</td>
+                     <td>
+                        <div>
+                           <select name="srcintfce" id="srcintfce" class="text" onchange="selectSourceCustom('srcintfce')">
+                              <option value="%lan">LAN</option>
+                              <option value="%wan">WAN</option>
+                              <option value="%loopback">Loopback</option>
+                              <option value="%cellular">Cellular</option>
+                              <option value="%any" selected="">Any</option>
+                              <option value="6">Custom</option>
+                           </select>
+                        </div>
+                        <div>
+                           <input hidden="" id="interface" name="interface" type="text" value="" class="text" list="trackconfigs" onfocusout="validOnshowSourceComboBox('interface','Track Source Interface')">
+                           <datalist id="trackconfigs">
+                              <option>LAN</option>
+                              <option>WAN</option>
+                              <option>Loopback</option>
+                              <option>Cellular</option>
+                              <option>Any</option>
+                           </datalist>
+                        </div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Interval(Secs)</td>
+                     <td><input type="number" name="interval" class="text" id="interval" value="" min="5" max="3600" onkeypress="return avoidSpace(event)" onfocusout="validateTrackRange('interval','Interval','tracking')"></td>
+                  </tr>
+                  <tr>
+                     <td>Retries</td>
+                     <td><input type="number" class="text" name="retries" id="retries" value="" min="1" max="99" onkeypress="return avoidSpace(event)" onfocusout="validateTrackRange('retries','Retries','tracking')"></td>
+                  </tr>
+                  <tr>
+                     <td>Activity on failure</td>
+                     <td>
+                        <select name="trackfailure" id="trackfailure" class="text">
+                           <option value="1" selected="">Restart Connection</option>
+                           <option value="2">Restart Router</option>
+                        </select>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div align="center"><input type="button" value="Back to Overview" name="back" style="display:inline block" class="button" onclick="gotoipsec()"><input type="submit" value="Apply" name="Apply" style="display:inline block" class="button"><input type="submit" value="Save &amp; Apply" name="Save" style="display:inline block" class="button"></div>
+      </form>
+      <script type="text/javascript">
+	  backupreference('oplevel');
+	  disableRouteBasedIPSec('authmode');
+	  showDivision('configpage');
+	  addLocalNetworkAndChangeIcon(1);
+	  findLocalNetworkAndDisplayRemoveIcon();
+	  addRemoteNetworkAndChangeIcon(1);
+	  findRemoteNetworkAndDisplayRemoveIcon();
+	  addByPassNetworkAndChangeIcon(1);
+	  findByPassNetworkAndDisplayRemoveIcon();
+	  </script>
+   </body>
+</html>

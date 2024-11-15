@@ -1,0 +1,317 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/snmp.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  var mngcnfrows = 1;
+
+function validateSystemConfig() {
+	var altmsg = "";
+	var table = document.getElementById("WiZConf");
+	var rows = table.rows;
+	var syscntct = document.getElementById("syscntct");
+	var sysname = document.getElementById("sysname");
+	var syslct = document.getElementById("syslct");
+	var rdcmty = document.getElementById("rdcmty");
+	var wrcmty = document.getElementById("wrcmty");
+	var trpcmty = document.getElementById("trapcmty");
+	var snmpportobj = document.getElementById("agent_port");
+	var trapportobj = document.getElementById("trap_port");
+	var valid = validateLengthRange("syscntct", false, 1, 256, "System Contact");
+	if (!valid) {
+		if (syscntct.value.trim() == "") altmsg += "System Contact should not be empty\n";
+		else altmsg += "System Contact is not valid\n";
+	}
+	valid = validateLengthRange("sysname", false, 1, 256, "System Name");
+	if (!valid) {
+		if (sysname.value.trim() == "") altmsg += "System Name should not be empty\n";
+		else altmsg += "System Name is not valid\n";
+	}
+	valid = validateLengthRange("syslct", false, 1, 256, "System Location");
+	if (!valid) {
+		if (syslct.value.trim() == "") altmsg += "System Location should not be empty\n";
+		else altmsg += "System Location is not valid\n";
+	}
+	valid = validateRange("agent_port", true, "Port");
+	if (!valid) {
+		if (snmpportobj.value.trim() == "") altmsg += "SNMP Port Number should not be empty\n";
+		else altmsg += "SNMP Port Number is not valid\n";
+	}
+	valid = validateLengthRange("rdcmty", false, 1, 32, "Read Community");
+	if (!valid) {
+		if (rdcmty.value.trim() == "") altmsg += "Read Community should not be empty\n";
+		else altmsg += "Read Community is not valid\n";
+	}
+	valid = validateLengthRange("wrcmty", false, 1, 32, "Write Community");
+	if (!valid) {
+		if (wrcmty.value.trim() == "") altmsg += "Write Community should not be empty\n";
+		else altmsg += "Write Community is not valid\n";
+	}
+	valid = validateLengthRange("trapcmty", false, 1, 32, "Trap Community");
+	if (!valid) {
+		if (trpcmty.value.trim() == "") altmsg += "Trap Community should not be empty\n";
+		else altmsg += "Trap Community is not valid\n";
+	}
+	valid = validateRange("trap_port", true, "Port");
+	if (!valid) {
+		if (trapportobj.value.trim() == "") altmsg += "Trap Port Number should not be empty\n";
+		else altmsg += "Trap Port Number is not valid\n";
+	}
+	if (altmsg.trim().length == 0) return true;
+	else {
+		alert(altmsg);
+		return false;
+	}
+}
+
+function displayMode(id) {
+	var modeobj = document.getElementById(id);
+	var mode = modeobj.options[modeobj.selectedIndex].text;
+	var authrow = document.getElementById('authrow');
+	var encryptrow = document.getElementById('encryptrow');
+	var apassrow = document.getElementById('apassrow');
+	var epassrow = document.getElementById('epassrow');
+	authrow.style.display = 'none';
+	encryptrow.style.display = 'none';
+	apassrow.style.display = 'none';
+	epassrow.style.display = 'none';
+	if (mode == "Privacy") {
+		authrow.style.display = 'table-row';
+		encryptrow.style.display = 'table-row';
+		apassrow.style.display = 'table-row';
+		epassrow.style.display = 'table-row';
+	} else if (mode == "Authentication") {
+		authrow.style.display = 'table-row';
+		apassrow.style.display = 'table-row';
+	}
+}
+$(document).on('click', '.toggle1-password', function () {
+	$(this).toggleClass("fa-eye fa-eye-slash");
+	var input = $("#authpwd");
+	input.attr('type') === 'password' ? input.attr('type', 'text') : input.attr('type', 'password')
+});
+$(document).on('click', '.toggle2-password', function () {
+	$(this).toggleClass("fa-eye fa-eye-slash");
+	var input = $("#encrypwd");
+	input.attr('type') === 'password' ? input.attr('type', 'text') : input.attr('type', 'password')
+});
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=SNMPProcess.cgi" method="post" onsubmit="return validateSystemConfig()">
+         <br>
+         <p class="style5" align="center">SNMP Configuration</p>
+         <br>
+         <table class="borderlesstab nobackground" style="width:420px; margin-bottom:0px;" id="configtype" align="center">
+            <tbody>
+               <tr style="padding:0px;margin:0px;">
+                  <td style="padding:0px;margin:0px;">
+                     <ul id="snmpconfigdiv">
+                        <li><a class="casesense snmpconfiguration" onclick="showDivision('systempage')" id="hilightthis">System</a></li>
+                        <li><a class="casesense snmpconfiguration" onclick="showDivision('trapspage')" id="">Traps</a></li>
+                     </ul>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div id="systempage" align="center" style="margin: 0px; display: inline;">
+            <table class="borderlesstab" style="width:420px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td width="200">Activation</td>
+                     <td width="200"><label class="switch" style="vertical-align:middle"><input type="checkbox" name="snmpActvtn" id="snmpActvtn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td width="200">SNMP Version</td>
+                     <td width="200">
+                        <select class="text" name="snmpVersion" id="snmpVersion">
+                           <option value="v1" selected="">v1</option>
+                           <option value="v2c">v2c</option>
+                           <option value="usm">v3</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td width="200">System Contact</td>
+                     <td width="200"><input type="text" name="syscntct" id="syscntct" class="text" value="www.nomus.in" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('syscntct',false,1,256,'System Contact')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">System Name</td>
+                     <td width="200"><input type="text" name="sysname" id="sysname" maxlength="256" class="text" value="WiZNG" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('sysname',false,1,256,'System Name')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">System Location</td>
+                     <td width="200"><input type="text" name="syslct" id="syslct" maxlength="256" class="text" value="Hyderabad" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('syslct',false,1,256,'System Location')"></td>
+                  </tr>
+                  <tr>
+                     <td>SNMP Port</td>
+                     <td><input type="number" class="text" id="agent_port" name="agent_port" value="161" min="1" max="65535" onfocusout="validateRange('agent_port',true,'Port')"></td>
+                  </tr>
+               </tbody>
+            </table>
+            <br>
+            <p class="style5" align="center">SNMP v1 and v2c Settings</p>
+            <br>
+            <table class="borderlesstab" style="width:420px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td width="200">Read Community</td>
+                     <td width="200"><input type="text" name="rdcmty" id="rdcmty" maxlength="32" class="text" value="public" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('rdcmty',false,1,32,'Read Community')"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">Write Community</td>
+                     <td width="200"><input type="text" name="wrcmty" id="wrcmty" maxlength="32" class="text" value="private" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('wrcmty',false,1,32,'Write Community')"></td>
+                  </tr>
+               </tbody>
+            </table>
+            <br>
+            <p class="style5" align="center">SNMP v3 Settings</p>
+            <br>
+            <table class="borderlesstab" style="width:420px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td width="200">User</td>
+                     <td width="200"><input type="text" name="user" id="user" maxlength="256" class="text" value="nomus" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td width="200">Security Mode</td>
+                     <td width="200">
+                        <select class="text" name="secmode" id="secmode" onchange="displayMode('secmode')">
+                           <option value="priv">Privacy</option>
+                           <option value="auth">Authentication</option>
+                           <option value="noauth" selected="">None</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="authrow" style="display: none;">
+                     <td width="200">Authentication</td>
+                     <td width="200">
+                        <select class="text" name="authentication" id="authentication">
+                           <option value="MD5" selected="">MD5</option>
+                           <option value="SHA">SHA</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="encryptrow" style="display: none;">
+                     <td width="200">Encryption</td>
+                     <td width="200">
+                        <select class="text" name="encryption" id="encryption">
+                           <option value="DES" selected="">DES</option>
+                           <option value="AES">AES</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="apassrow" style="display: none;">
+                     <td width="200">Authentication Password</td>
+                     <td width="200"><input type="password" name="authpwd" id="authpwd" maxlength="256" class="text" value="nomuscomm" onkeypress="return avoidSpace(event)"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle1-password"></span></td>
+                  </tr>
+                  <tr id="epassrow" style="display: none;">
+                     <td width="200">Encryption Password</td>
+                     <td width="200"><input type="password" name="encrypwd" id="encrypwd" maxlength="256" class="text" value="nomus@123" onkeypress="return avoidSpace(event)"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle2-password"></span></td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div id="trapspage" align="center" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:420px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Trap Version</td>
+                     <td>
+                        <select class="text" name="trapVersion" id="trapVersion">
+                           <option value="v1" selected="">v1</option>
+                           <option value="v2">v2</option>
+                           <option value="usm">v3</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Trap Community</td>
+                     <td><input type="text" name="trapcmty" id="trapcmty" maxlength="32" class="text" value="public" onkeypress="return avoidSpace(event)" onfocusout="validateLengthRange('trapcmty',false,1,32,'Trap Community')"></td>
+                  </tr>
+                  <tr>
+                     <td>Trap Port</td>
+                     <td><input type="number" class="text" id="trap_port" name="trap_port" value="162" min="1" max="65535" onfocusout="validateRange('trap_port',true,'Port')"></td>
+                  </tr>
+               </tbody>
+            </table>
+            <br>
+            <p class="style5" align="center">Traps</p>
+            <br>
+            <table class="borderlesstab" style="width:420px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Cold Start</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="coldstart" id="coldstart" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Authentication</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="authtrapenable" id="authtrapenable" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Link Up/Down</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="linkUpDownNotifications" id="linkUpDownNotifications" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+               </tbody>
+            </table>
+            <br>
+            <p class="style5" align="center">Manager Configuration</p>
+            <br>
+            <table class="borderlesstab" style="width:420px;" align="center" id="managerconf">
+               <tbody>
+                  <tr>
+                     <th width="200">Parameters</th>
+                     <th width="200">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Activation</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="trapActvtn" id="trapActvtn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr id="mngcnfrow2">
+                     <td>
+                        <div>Managers</div>
+                     </td>
+                     <td>
+                        <div><input type="text" class="text" id="manager2" name="manager2" onkeypress="return avoidSpace(event);" style="display:inline block;" onfocusout="validatenameandip('manager2',true,'Managers ')"><i class="fa fa-plus" id="add2" style="font-size: 10px; margin-left: 5px; color: green; display: inline;" onclick="addIPRowAndChangeIcon(2)"></i><i class="fa fa-close" style="font-size: 10px; margin-left: 5px; color: red; display: none;" id="remove2" onclick="deletetableRow(2)"></i><input hidden="" id="row2" value="2"></div>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  showDivision('systempage');
+	  displayMode('secmode');
+	  addIPRowAndChangeIcon(1);
+	  fillIProw(mngcnfrows,'192.168.1.2');
+	  findLastRowAndDisplayRemoveIcon();
+	  </script>
+   </body>
+</html>

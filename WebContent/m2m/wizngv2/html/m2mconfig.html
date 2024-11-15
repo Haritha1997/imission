@@ -1,0 +1,99 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  function validatem2m() {
+	var alertmsg = "";
+	var server = document.getElementById("server");
+	var valid = validatenameandip("server", true, "Server");
+	if (!valid) {
+		if (server.value.trim() == "") alertmsg += "Server should not be empty\n";
+		else alertmsg += "Server is not valid\n";
+	}
+	var port = document.getElementById("port");
+	if (port.value.trim() == "") {
+		port.style.outline = "thin solid red";
+		alertmsg += "Server Port should not be empty\n";
+	} else {
+		port.style.outline = "initial";
+	}
+	var pollout = document.getElementById("pollout");
+	if (pollout.value.trim() == "") {
+		pollout.style.outline = "thin solid red";
+		alertmsg += "Polling Period should not be empty\n";
+	} else {
+		pollout.style.outline = "initial";
+	}
+	var timeout = document.getElementById("timeout");
+	if (timeout.value.trim() == "") {
+		timeout.style.outline = "thin solid red";
+		alertmsg += "Retry Timeout should not be empty\n";
+	} else {
+		timeout.style.outline = "initial";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+} 
+</script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=M2MConfigProcess.cgi" method="post" onsubmit="return validatem2m()">
+         <br>
+         <p class="style5" align="center">M2M Configuration</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" align="center">
+            <tbody>
+               <tr>
+                  <th width="200px">Parameters</th>
+                  <th width="200px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Activation</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="activation" name="activation" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>Interface</td>
+                  <td>
+                     <select name="interface" id="interface" class="text">
+                        <option value="lan">LAN</option>
+                        <option value="wan">WAN</option>
+                        <option value="cellular">Cellular</option>
+                        <option value="any" selected="">Any</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Server</td>
+                  <td><input type="text" class="text" name="server" id="server" value="192.168.1.2" maxlength="256" onkeypress="return avoidSpace(event)" onfocusout="validatenameandip('server',true,'Server')"></td>
+               </tr>
+               <tr>
+                  <td>Server Port</td>
+                  <td><input type="number" class="text" name="port" id="port" value="445" min="1" max="65535" onkeypress="return avoidSpace(event)"></td>
+               </tr>
+               <tr>
+                  <td>Polling Period (Min)</td>
+                  <td><input type="number" class="text" name="pollout" id="pollout" value="1" min="1" max="60" onkeypress="return avoidSpace(event)"></td>
+               </tr>
+               <tr>
+                  <td>Retry Timeout (Sec)</td>
+                  <td><input type="number" class="text" name="timeout" id="timeout" value="10" min="10" max="60" onkeypress="return avoidSpace(event)"></td>
+               </tr>
+               <tr>
+                  <td>Model Number</td>
+                  <td><input type="text" class="text" name="model" id="model" value="WiZ_NG" maxlength="256" onkeypress="return avoidSpace(event)"></td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+   </body>
+</html>

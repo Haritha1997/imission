@@ -1,0 +1,178 @@
+.hilightthis{
+    color: white;
+    background-color: grey;
+    border: 1px solid white;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* #hilightthis{
+  color: white;
+  background-color: grey;
+  border: 1px solid white;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+} */
+
+
+/* modifiy here */
+input[type=button]
+    {
+      min-width:70px;
+      min-height: 30px;
+    }
+    .selbtn{
+      border-radius: 5px;
+      background-color: white;
+      color: #366903;
+      font-weight: bold;
+      padding:5px 5px;
+      border: 1px solid #c4dfb9;
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      font-size: 13px;
+    }
+    .selbtn:hover,  .deselbtn:hover
+    {
+      color: #5983dd;
+      border:1px solid  #5983dd;
+    }
+    .deselbtn{
+      border-radius: 6px;
+      background-color: white;
+      color: grey;
+      font-weight: bold;
+      padding:5px 5px;
+      border:1px solid  grey;
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      font-size: 13px;
+    }
+    .delete{
+      border-radius: 6px;
+      background-color: white;
+      color: rgb(218, 73, 63);
+      font-weight: bold;
+      padding:5px 5px;
+      border:1px solid rgb(218, 73, 63);
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      font-size: 13px;
+    }
+    .delete:hover
+    {
+      color: #b359dd;
+      border:1px solid  #b359dd;
+    }
+	#headname{
+		color: gray;
+		/* text-align: center; */
+		font-weight: bold;
+		font-size: 16px;
+	}
+
+
+/* file name */
+
+/* file name chage */
+#file-input-ca {
+    display: none;
+  }
+  
+  /* Customize the appearance of the label */
+  #file-label {
+    display: inline-block;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  #upbtn,#upbtn-cert,#upbtn-key,#upbtn-hmac,#upbtn-up,#upbtn-psk{
+    border-radius: 6px;
+    background-color: white;
+    color: grey;
+    font-weight: bold;
+    padding: 5px 5px;
+    border: 1px solid grey;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    min-width: 70px;
+    min-height: 30px;
+    margin-top: 11px;
+  }
+  #upbtn:hover,#upbtn-cert:hover,#upbtn-key:hover
+  ,#upbtn-hmac:hover,#upbtn-up:hover,#upbtn-psk:hover{
+      color: #5983dd;
+      border:1px solid  #5983dd;
+  }
+#canbtn,#canbtn-cert,#canbtn-key,#canbtn-hmac
+,#canbtn-up,#canbtn-psk{
+    border-radius: 6px;
+    background-color: white;
+    color: rgb(218, 73, 63);
+    font-weight: bold;
+    padding: 5px 5px;
+    border: 1px solid rgb(218, 73, 63);
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    min-width: 70px;
+    min-height: 30px;
+    margin: auto;
+    padding: auto;
+
+}
+#canbtn:hover,#canbtn-cert:hover,#canbtn-keyhover
+,#canbtn-hmac:hover,#canbtn-up:hover,#canbtn-psk:hover{
+    color: #b359dd;
+    border:1px solid  #b359dd;
+}
+
+#file-label,#file-label-cert,#file-label-key,#file-label-hmac
+,#file-label-up,#file-label-psk{
+    border-radius: 6px;
+    text-align: center;
+    background-color: white;
+    color:  #5983dd;
+    font-weight: bold;
+    padding: 5px 4px;
+    border:1px solid #5983dd;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    min-width: 70px;
+    min-height: 25px;
+    margin: auto;
+    padding: auto;
+}
+#file-label:hover,#file-label-cert:hover,#file-label-key:hover
+,#file-label-hmac:hover,#file-label-up:hover,#file-label-psk:hover{
+    color: #366903 ;
+    border:1px solid #366903;
+}
+
+
+input[type="file"] {
+    display: none;
+  }
+
+  #catabchosefileid,#certtabchosefileid,#keytabchosefileid,#hmactabchosefileid
+  ,#uptabchosefileid,#pasktabchosefileid{
+    border-radius: 6px;
+    text-align: center;
+    background-color: white;
+    font-weight: bold;
+    padding: 5px 4px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    min-width: 70px;
+    min-height: 25px;
+  }
+  
+  #file-label,#file-label-cert,#file-label-key,#file-label-hmac
+  ,#file-label-up,#file-label-psk{
+    margin-left: 15px;
+  }
+
+
+.hiderowcol{
+  color: grey;
+  font-size: 16px;
+  font-weight: bold;
+}

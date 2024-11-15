@@ -1,0 +1,74 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+	  <script type="text/javascript" src="js/lan.js"></script>
+	  <script type="text/javascript">
+	  var iprows = 1;
+
+function validateLoopbackIpConfig() {
+	var alertmsg = "";
+	var table = document.getElementById("ipconfig");
+	var rows = table.rows;
+	for (var i = 2; i < rows.length; i++) {
+		var cols = rows[i].cells;
+		var ipaddress = cols[1].childNodes[0].childNodes[0];
+		var subnet = cols[1].childNodes[2].childNodes[0];
+		var valid = validateIP(ipaddress.id, true, "IPv4 Address");
+		if (!valid) {
+			alertmsg += (i - 1);
+			if (i == 2) alertmsg += "st";
+			else if (i == 3) alertmsg += "nd";
+			else if (i == 4) alertmsg += "rd";
+			else alertmsg += "th";
+			if (ipaddress.value.trim() == "") alertmsg += " IP Address should not be empty\n";
+			else alertmsg += " IP Address is not valid\n";
+		}
+		valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+		if (!valid) {
+			alertmsg += (i - 1);
+			if (i == 2) alertmsg += "st";
+			else if (i == 3) alertmsg += "nd";
+			else if (i == 4) alertmsg += "rd";
+			else alertmsg += "th";
+			if (subnet.value.trim() == "") alertmsg += " Subnet Address should not be empty\n";
+			else alertmsg += " Subnet Address is not valid\n";
+		}
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=LoopbackAddressProcess.cgi" method="post" onsubmit="return validateLoopbackIpConfig()">
+         <br>
+         <p class="style5" align="center">Loopback IP Configuration</p>
+         <br>
+         <table class="borderlesstab" id="ipconfig" align="center">
+            <tbody>
+               <tr>
+                  <th width="200">Parameters</th>
+                  <th width="200">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Activation</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="loopback" name="loopback" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  addIPRowAndChangeIcon(1);
+	  fillIProw(iprows,'127.0.0.1','255.0.0.0');
+	  findLastRowAndDisplayRemoveIcon();
+	  </script>
+   </body>
+</html>

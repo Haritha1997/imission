@@ -1,0 +1,250 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript" src="js/cellular.js"></script>
+	  <script type="text/javascript">
+	  var sim1customdns = 14;
+	  var sim2customdns = 14;
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=CellularAddressProcess.cgi" method="post" onsubmit="return validateCellularConfig()">
+         <br>
+         <p align="center" id="cellularconfig" class="style5">Cellular Configuration</p>
+         <br>
+         <table class="borderlesstab nobackground" style="width:400px;margin-bottom:0px;" id="simtype" align="center">
+            <tbody>
+               <tr style="padding:0px;margin:0px;">
+                  <td style="padding:0px;margin:0px;">
+                     <ul id="simtypediv">
+                        <li><a class="casesense cellularlist" onclick="showDivision('sim1page')" id="hilightthis">SIM 1</a></li>
+                        <li><a class="casesense cellularlist" onclick="showDivision('sim2page')" id="">SIM 2</a></li>
+                        <li><a class="casesense cellularlist" onclick="showDivision('sim_switch')" id="">SIM Switch</a></li>
+                     </ul>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div id="sim1page" align="center" style="margin: 0px; display: inline;">
+            <table class="borderlesstab" style="width:400px;" align="center" id="sim1">
+               <tbody>
+                  <tr>
+                     <th width="200px">Parameters</th>
+                     <th width="200px">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Activation</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim1actvn" id="sim1actvn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Protocol</td>
+                     <td>
+                        <select class="text" id="sim1cnctntype" name="sim1cnctntype" onchange="Sim1ConnectionType('sim1cnctntype')">
+                           <option value="1" selected="">PPP</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="hidpppsim1auth">
+                     <td>PPP Authentication</td>
+                     <td>
+                        <select class="text" id="sim1pppauth" name="sim1pppauth">
+                           <option value="1">PAP</option>
+                           <option value="2">CHAP</option>
+                           <option value="3" selected="">Any</option>
+                           <option value="4">None</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="hidpppsim1usrname">
+                     <td>Username</td>
+                     <td><input type="text" name="sim1usrname" id="sim1usrname" maxlength="256" value="internet" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr id="hidpppsim1pwd">
+                     <td>Password</td>
+                     <td><input type="password" name="sim1pwd" id="sim1pwd" maxlength="256" value="internet" class="text" onkeypress="return avoidSpace(event)"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-sim1pwd"></span></td>
+                  </tr>
+                  <tr id="hidsim1dialno">
+                     <td>Dial Number</td>
+                     <td><input type="text" name="sim1dialno" id="sim1dialno" maxlength="256" value="*99#" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>APN</td>
+                     <td><input type="text" name="sim1apn" id="sim1apn" maxlength="256" value="" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Auto APN</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim1autoapn" id="sim1autoapn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Pin Code</td>
+                     <td><input type="text" name="sim1pincode" id="sim1pincode" maxlength="256" value="" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Network</td>
+                     <td>
+                        <select class="text" id="sim1ntwrk" name="sim1ntwrk">
+                           <option value="1" selected="">Auto</option>
+                           <option value="2">2G</option>
+                           <option value="3">3G</option>
+                           <option value="4">4G</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>MTU</td>
+                     <td><input type="number" name="sim1mtu" id="sim1mtu" placeholder="1500" value="" min="1" max="9000" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('sim1mtu',false,'MTU')"></td>
+                  </tr>
+                  <tr>
+                     <td>Metric</td>
+                     <td><input type="number" name="sim1metric" id="sim1metric" placeholder="0" value="" min="0" max="255" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('sim1metric',false,'Metric')"></td>
+                  </tr>
+                  <tr>
+                     <td>Default Route</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim1dfltrte" id="sim1dfltrte" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Obtain DNS Servers Automatically</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim1autodns" id="sim1autodns" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+         <div id="sim2page" align="center" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:400px;" align="center" id="sim2">
+               <tbody>
+                  <tr>
+                     <th width="200px">Parameters</th>
+                     <th width="200px">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Activation</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim2actvn" id="sim2actvn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Protocol Type</td>
+                     <td>
+                        <select class="text" id="sim2cnctntype" name="sim2cnctntype" onchange="Sim2ConnectionType('sim2cnctntype')">
+                           <option value="1" selected="">PPP</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="hidpppsim2auth">
+                     <td>PPP Authentication</td>
+                     <td>
+                        <select class="text" id="sim2pppauth" name="sim2pppauth">
+                           <option value="1">PAP</option>
+                           <option value="2">CHAP</option>
+                           <option value="3" selected="">Any</option>
+                           <option value="4">None</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr id="hidpppsim2usrname">
+                     <td>Username</td>
+                     <td><input type="text" name="sim2usrname" id="sim2usrname" maxlength="256" value="internet" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr id="hidpppsim2pwd">
+                     <td>Password</td>
+                     <td><input type="password" name="sim2pwd" id="sim2pwd" maxlength="256" value="internet" class="text" onkeypress="return avoidSpace(event)"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-sim2pwd"></span></td>
+                  </tr>
+                  <tr id="hidsim2dialno">
+                     <td>Dial Number</td>
+                     <td><input type="text" name="sim2dialno" id="sim2dialno" maxlength="256" value="*99#" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>APN</td>
+                     <td><input type="text" name="sim2apn" id="sim2apn" maxlength="256" value="" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Auto APN</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim2autoapn" id="sim2autoapn" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Pin Code</td>
+                     <td><input type="text" name="sim2pincode" id="sim2pincode" maxlength="256" value="" class="text" onkeypress="return avoidSpace(event)"></td>
+                  </tr>
+                  <tr>
+                     <td>Network</td>
+                     <td>
+                        <select class="text" id="sim2ntwrk" name="sim2ntwrk">
+                           <option value="1" selected="">Auto</option>
+                           <option value="2">2G</option>
+                           <option value="3">3G</option>
+                           <option value="4">4G</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>MTU</td>
+                     <td><input type="number" name="sim2mtu" id="sim2mtu" class="text" value="" placeholder="1500" min="1" max="9000" onkeypress="return avoidSpace(event)" onfocusout="validateRange('sim2mtu',false,'MTU')"></td>
+                  </tr>
+                  <tr>
+                     <td>Metric</td>
+                     <td><input type="number" name="sim2metric" id="sim2metric" placeholder="0" value="" min="0" max="255" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('sim2metric',false,'Metric')"></td>
+                  </tr>
+                  <tr>
+                     <td>Default Route</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim2dfltrte" id="sim2dfltrte" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Obtain DNS Servers Automatically</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="sim2autodns" id="sim2autodns" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  
+               </tbody>
+            </table>
+         </div>
+         <div id="sim_switch" align="center" style="margin: 0px; display: none;">
+            <table class="borderlesstab" style="width:400px;" align="center" id="WiZConf">
+               <tbody>
+                  <tr>
+                     <th width="200px">Parameters</th>
+                     <th width="200px">Configuration</th>
+                  </tr>
+                  <tr>
+                     <td>Primary SIM</td>
+                     <td>
+                        <select class="text" id="psim" name="psim">
+                           <option value="1" selected="">SIM 1</option>
+                           <option value="2">SIM 2</option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>No of Retries</td>
+                     <td><input type="number" name="retries" id="retries" class="text" min="1" max="20" value="3" onkeypress="return avoidSpace(event)" onfocusout="validateRange('retries',true,'No of Retries')"></td>
+                  </tr>
+                  <tr>
+                     <td>Recheck Primary SIM</td>
+                     <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="recheckmaster" id="recheckmaster" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+                  </tr>
+                  <tr>
+                     <td>Recheck Primary SIM Timeout (HRS)</td>
+                     <td><input type="number" name="recheckTime" id="recheckTime" class="text" min="1" max="720" value="5" onkeypress="return avoidSpace(event)" onfocusout="validateRange('recheckTime',true,'Recheck Primary SIM Timeout')"></td>
+                  </tr>
+                  <tr>
+                     <td>Manual SIM Shift</td>
+                     <td><input type="submit" name="Shift" value="Shift" class="button1"></td>
+                  </tr>
+               </tbody>
+            </table>
+            <br>
+         </div>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  showDivision('sim1page');
+	  Sim1ConnectionType('sim1cnctntype');
+	  Sim2ConnectionType('sim2cnctntype');
+	  addSim1DNSRowAndChangeIcon(14);
+	  findSim1DNSLastRowAndDisplayRemoveIcon();
+	  addSim2DNSRowAndChangeIcon(14);
+	  findSim2DNSLastRowAndDisplayRemoveIcon();
+	  </script>
+   </body>
+</html>

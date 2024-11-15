@@ -1,0 +1,133 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/portforward.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  function validateForwardEdit() {
+	var alertmsg = "";
+	var sipobj = document.getElementById("sipaddress");
+	var sportobj = document.getElementById("s_port");
+	var eipobj = document.getElementById("eipaddress");
+	var eportobj = document.getElementById("e_port");
+	var intipobj = document.getElementById("intipaddress");
+	var iportobj = document.getElementById("i_port");
+	var valid = validateIP("sipaddress", false, "Source IP Address");
+	if (!valid) {
+		if (sipobj.value.trim() == "") alertmsg += "Source IP Address should not be empty\n";
+		else alertmsg += "Source IP Address is not valid\n";
+	}
+	var valid = validateIP("eipaddress", false, "External IP Address");
+	if (!valid) {
+		if (eipobj.value.trim() == "") alertmsg += "External IP Address should not be empty\n";
+		else alertmsg += "External IP Address is not valid\n";
+	}
+	var valid = validatePortRange("e_port", "External Port", true);
+	if (!valid) {
+		if (eportobj.value.trim() == "") alertmsg += "External Port should not be empty\n";
+		else alertmsg += "External Port is not valid\n";
+	}
+	var valid = validatePortRange("s_port", "Source Port", false);
+	if (!valid) {
+		if (sportobj.value.trim() == "") alertmsg += "Source Port should not be empty\n";
+		else alertmsg += "Source Port is not valid\n";
+	}
+	var valid = validateIP("intipaddress", true, "Internal IP Address");
+	if (!valid) {
+		if (intipobj.value.trim() == "") alertmsg += "Internal IP Address should not be empty\n";
+		else alertmsg += "Internal IP Address is not valid\n";
+	}
+	var valid = validatePortRange("i_port", "Internal Port", true);
+	if (!valid) {
+		if (iportobj.value.trim() == "") alertmsg += "Internal Port should not be empty\n";
+		else alertmsg += "Internal Port is not valid\n";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=PortForwardConfigProcess=dfsdfsdfdsf.cgi" method="post" onsubmit="return validateForwardEdit()">
+         <br>
+         <p align="center" id="forwardedit" class="style5">Port Forwards</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" align="center">
+            <tbody>
+               <tr>
+                  <th width="200px">Parameters</th>
+                  <th width="200px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Activation</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="activation" name="activation" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>Instance Name</td>
+                  <td><input type="text" class="text" id="instancename" name="instancename" value="dfsdfsdfdsf" readonly=""></td>
+               </tr>
+               <tr>
+                  <td>Protocol</td>
+                  <td>
+                     <select class="text" id="proto" name="proto">
+                        <option value="1" selected="">TCP</option>
+                        <option value="2">UDP</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Source Interface</td>
+                  <td>
+                     <select class="text" id="sinterface" name="sinterface">
+                        <option value="1">LAN</option>
+                        <option value="2">WAN</option>
+                        <option value="4" selected="">Cellular</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Source IP Address</td>
+                  <td><input type="text" class="text" id="sipaddress" name="sipaddress" value="" placeholder="any" onfocusout="validateIP('sipaddress',false,'Source IP Address')"></td>
+               </tr>
+               <tr>
+                  <td>Source Port</td>
+                  <td><input type="text" class="text" id="s_port" name="s_port" value="" placeholder="any" min="1" max="65535" onfocusout="validatePortRange('s_port','Source Port',false)"></td>
+               </tr>
+               <tr>
+                  <td>External IP Address</td>
+                  <td><input type="text" class="text" id="eipaddress" name="eipaddress" value="" placeholder="any" onfocusout="validateIP('eipaddress',false,'External IP Address')"></td>
+               </tr>
+               <tr>
+                  <td>External Port</td>
+                  <td><input type="text" class="text" id="e_port" name="e_port" value="" min="1" max="65535" onfocusout="validatePortRange('e_port','External Port',true)"></td>
+               </tr>
+               <tr>
+                  <td>Internal Interface</td>
+                  <td>
+                     <select class="text" id="int_interface" name="int_interface">
+                        <option value="1" selected="">LAN</option>
+                        <option value="2">WAN</option>
+                        <option value="4">Cellular</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Internal IP Address</td>
+                  <td><input type="text" class="text" id="intipaddress" name="intipaddress" value="" onfocusout="validateIP('intipaddress',true,'Internal IP Address')"></td>
+               </tr>
+               <tr>
+                  <td>Internal Port</td>
+                  <td><input type="text" class="text" id="i_port" name="i_port" value="" min="1" max="65535" onfocusout="validatePortRange('i_port','Internal Port', true)"></td>
+               </tr>
+               <tr></tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" value="Apply" name="Apply" style="display:inline block" class="button"><input type="submit" value="Save &amp; Apply" name="Save" style="display:inline block" class="button"></div>
+      </form>
+   </body>
+</html>

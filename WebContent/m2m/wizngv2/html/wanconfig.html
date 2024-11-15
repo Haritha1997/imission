@@ -1,0 +1,315 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="js/wan.js"></script>
+	  <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+var iprows = 1;
+var customdnspppoe = 10;
+var customdnsdhcp = 10;
+var customdnsstatic = 5;
+
+function validatewanIpConfig() {
+	var alertmsg = "";
+	var table = document.getElementById("WiZConf");
+	var rows = table.rows;
+	var valid;
+	var selobj = document.getElementById('wanproto');
+	var protocol = selobj.options[selobj.selectedIndex].text;
+	if (protocol == 'Static Address') 
+	{
+		var table = document.getElementById("statictab");
+		var rows = table.rows;
+		for (var i = 0; i < rows.length; i++) 
+		{
+			var cols = rows[i].cells;
+			var ipaddress = cols[1].childNodes[0].childNodes[0];
+			var subnet = cols[1].childNodes[2].childNodes[0];
+			var valid = validateIP(ipaddress.id, true, "IPv4 Address");
+			if (!valid) 
+			{
+				alertmsg += (i + 1);
+				if (i == 0) alertmsg += "st";
+				else if (i == 1) alertmsg += "nd";
+				else if (i == 2) alertmsg += "rd";
+				else alertmsg += "th";
+				if (ipaddress.value.trim() == "") alertmsg += " IPv4 Address should not be empty\n";
+				else alertmsg += " IPv4 Address is not valid\n";
+			}
+			valid = validateSubnetMask(subnet.id, true, "Subnet Address");
+			if (!valid) 
+			{
+				alertmsg += (i + 1);
+				if (i == 0) alertmsg += "st";
+				else if (i == 1) alertmsg += "nd";
+				else if (i == 2) alertmsg += "rd";
+				else alertmsg += "th";
+				if (subnet.value.trim() == "") alertmsg += " IPv4 Subnet Address should not be empty\n";
+				else alertmsg += " IPv4 Subnet Address is not valid\n";
+			}
+		}
+		var statable = document.getElementById("staticdns");
+		var starows = statable.rows;
+		var ipgw = document.getElementById("ipv4gw");
+		var ipbc = document.getElementById("ipv4bc");
+		valid = validateIP("ipv4gw", false, "IPv4 Gateway");
+		if (!valid) {
+			if (ipgw.value.trim() == "") alertmsg += "IPv4 Gateway should not be empty\n";
+			else alertmsg += "IPv4 Gateway is not valid\n";
+		}
+		valid = validateIP("ipv4bc", false, "IPv4 Broadcast");
+		if (!valid) {
+			if (ipbc.value.trim() == "") alertmsg += "IPv4 Broadcast should not be empty\n";
+			else alertmsg += "IPv4 Broadcast is not valid\n";
+		}
+		var mtu = document.getElementById("staticmtu");
+		var valid = validateRange("staticmtu", false, "MTU");
+		if (!valid) {
+			if (mtu.value.trim() == "") alertmsg += "MTU should not be empty\n";
+			else alertmsg += "MTU is not valid\n";
+		}
+		var metric = document.getElementById("staticmetric");
+		var valid = validateRange("staticmetric", false, "Metric");
+		if (!valid) {
+			if (metric.value.trim() == "") alertmsg += "Metric should not be empty\n";
+			else alertmsg += "Metric is not valid\n";
+		}
+		for (var i = 4; i < starows.length; i++) {
+			var cols = starows[i].cells;
+			var customstadns = cols[1].childNodes[0].childNodes[0];
+			var valid = validateIP(customstadns.id, false, "Custom DNS Servers");
+			if (!valid) {
+				if (customstadns.value.trim() == "") alertmsg += "Custom DNS Server-" + (i - 3) + " should not be empty\n";
+				else alertmsg += "Custom DNS Server-" + (i - 3) + " is not valid\n";
+			}
+		}
+	} else if (protocol == 'DHCP Client') {
+		var dhcptable = document.getElementById("dhcptab");
+		var dhcprows = dhcptable.rows;
+		var dhcpdns = document.getElementById("dhcpautodns");
+		if (dhcpdns.checked == false) {
+			for (var i = 7; i < dhcprows.length; i++) {
+				var cols = dhcprows[i].cells;
+				var customdhcpdns = cols[1].childNodes[0].childNodes[0];
+				var valid = validateIP(customdhcpdns.id, true, "Custom DNS Servers");
+				if (!valid) {
+					if (customdhcpdns.value.trim() == "") alertmsg += "Custom DNS Server-" + (i - 6) + " should not be empty\n";
+					else alertmsg += "Custom DNS Server-" + (i - 6) + " is not valid\n";
+				}
+			}
+		}
+		var dhcpmtu = document.getElementById("dhcpmtu");
+		var valid = validateRange("dhcpmtu", false, "MTU");
+		if (!valid) {
+			if (dhcpmtu.value.trim() == "") alertmsg += "MTU should not be empty\n";
+			else alertmsg += "MTU is not valid\n";
+		}
+		var dhcpmetric = document.getElementById("dhcpmetric");
+		var valid = validateRange("dhcpmetric", false, "Metric");
+		if (!valid) {
+			if (dhcpmetric.value.trim() == "") alertmsg += "Metric should not be empty\n";
+			else alertmsg += "Metric is not valid\n";
+		}
+	} else if (protocol == 'PPPoE') {
+		var ppptable = document.getElementById("pppoetab");
+		var ppprows = ppptable.rows;
+		var pppdns = document.getElementById("pppoeautodns");
+		if (pppdns.checked == false) {
+			for (var i = 9; i < ppprows.length; i++) {
+				var cols = ppprows[i].cells;
+				var custompppdns = cols[1].childNodes[0].childNodes[0];
+				var valid = validateIP(custompppdns.id, true, "Custom DNS Servers");
+				if (!valid) {
+					if (custompppdns.value.trim() == "") alertmsg += "Custom DNS Server-" + (i - 8) + " should not be empty\n";
+					else alertmsg += "Custom DNS Server-" + (i - 8) + " is not valid\n";
+				}
+			}
+		}
+		var pppoemtu = document.getElementById("pppoemtu");
+		var valid = validateRange("pppoemtu", false, "MTU");
+		if (!valid) {
+			if (pppoemtu.value.trim() == "") alertmsg += "MTU should not be empty\n";
+			else alertmsg += "MTU is not valid\n";
+		}
+		var pppoemetric = document.getElementById("pppoemetric");
+		var valid = validateRange("pppoemetric", false, "Metric");
+		if (!valid) {
+			if (pppoemetric.value.trim() == "") alertmsg += "Metric should not be empty\n";
+			else alertmsg += "Metric is not valid\n";
+		}
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+$(document).on('click', '.toggle-password', function () {
+	$(this).toggleClass("fa-eye fa-eye-slash");
+	var input = $("#pass");
+	input.attr('type') === 'password' ? input.attr('type', 'text') : input.attr('type', 'password')
+});
+</script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=WanAddressProcess.cgi" method="post" onsubmit="return validatewanIpConfig()">
+         <br>
+         <p class="style5" align="center" id="wan">WAN IP Configuration</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" align="center" style="width:400px;">
+            <tbody>
+               <tr>
+                  <th width="200px">Parameters</th>
+                  <th width="200px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Activation</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="activation" name="activation" style="vertical-align:middle" checked=""><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>MAC Address</td>
+                  <td>00:22:85:11:22:33</td>
+               </tr>
+               <tr>
+                  <td>Protocol</td>
+                  <td>
+                     <select class="text" id="wanproto" name="wanproto" onchange="displayActiveTable('wanproto');">
+                        <option value="1" selected="">Static Address</option>
+                        <option value="2">DHCP Client</option>
+                        <option value="3">PPPoE</option>
+                     </select>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <table class="borderlesstab" id="statictab" align="center" style="width: 400px; display: table;">
+            <tbody>
+            </tbody>
+         </table>
+         <table class="borderlesstab" id="staticdns" align="center" style="width: 400px; display: table;">
+            <tbody>
+               <tr>
+                  <td width="200px">IPv4 Gateway</td>
+                  <td width="200px"><input type="text" class="text" id="ipv4gw" name="ipv4gw" value="" maxlength="256" onkeypress="return avoidSpace(event)" onfocusout="validateIP('ipv4gw',false,'IPv4 Gateway')" /></td>
+               </tr>
+               <tr>
+                  <td width="200px">IPv4 Broadcast</td>
+                  <td width="200px"><input type="text" class="text" id="ipv4bc" name="ipv4bc" value="" maxlength="256" onkeypress="return avoidSpace(event)" onfocusout="validateIP('ipv4bc',false,'IPv4 Broadcast')" /></td>
+               </tr>
+               <tr>
+                  <td width="200px">MTU</td>
+                  <td width="200px"><input type="number" class="text" id="staticmtu" name="staticmtu" value="" min="1" max="9000" placeholder="1500" onkeypress="return avoidSpace(event)" onfocusout="validateRange('mtu',false,'MTU')" /></td>
+               </tr>
+               <tr>
+                  <td width="200px">Metric</td>
+                  <td width="200px"><input type="number" class="text" id="staticmetric" name="staticmetric" value="" min="1" max="255" placeholder="0" onkeypress="return avoidSpace(event)" onfocusout="validateRange('metric',false,'Metric')" /></td>
+               </tr>
+            </tbody>
+         </table>
+         <table class="borderlesstab" id="pppoetab" align="center" style="width: 400px; display: none;">
+            <tbody>
+               <tr>
+                  <td width="200px">UserName</td>
+                  <td width="200px"><input type="text" class="text" id="uname" name="uname" maxlength="256" value="" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td width="200px">Password</td>
+                  <td width="200px"><input type="password" class="text" id="pass" name="pass" maxlength="256" value="" style="display:inline block"><span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-password"></span></td>
+               </tr>
+               <tr>
+                  <td width="200px">PPP Authentication</td>
+                  <td width="200px">
+                     <select name="ppp_auth" id="ppp_auth">
+                        <option value="1">PAP</option>
+                        <option value="2">CHAP</option>
+                        <option value="3" selected="">Any</option>
+                        <option value="4">None</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td title="Specifies the Access Concentrator to connect to. If unset, pppd uses the first discovered one">Access Concentrator</td>
+                  <td><input type="text" class="text" id="accessConcent" name="accessConcent" value="" maxlength="256" onkeypress="return avoidSpace(event);" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td title="Specifies the Service Name to connect to. If unset, pppd uses the first discovered one">Service Name</td>
+                  <td><input type="text" class="text" id="service" name="service" value="" maxlength="256" onkeypress="return avoidSpace(event);" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td>MTU</td>
+                  <td><input type="number" name="pppoemtu" id="pppoemtu" class="text" value="" placeholder="1500" min="1" max="9000" onkeypress="return avoidSpace(event)" onfocusout="validateRange('pppoemtu',false,'MTU')"></td>
+               </tr>
+               <tr>
+                  <td>Metric</td>
+                  <td><input type="number" name="pppoemetric" id="pppoemetric" placeholder="0" value="" min="0" max="255" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('pppoemetric',false,'Metric')"></td>
+               </tr>
+               <tr>
+                  <td>Default Route</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="pppoedfltrte" id="pppoedfltrte" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>Obtain DNS Servers Automatically</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="pppoeautodns" id="pppoeautodns" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr id="cusdnspppoe11">
+                  <td width="200px">
+                     <div>Custom DNS Servers</div>
+                  </td>
+                  <td width="200px">
+                     <div><input type="text" class="text" id="serverspppoe11" name="serverspppoe11" onkeypress="return avoidSpace(event);" style="display:inline block;" onfocusout="validateIP('serverspppoe11',true,'Custom DNS Server')"><i class="fa fa-plus" id="addpppoe11" style="font-size: 10px; margin-left: 5px; color: green; display: inline;" onclick="addIPRowAndChangeIconpppoe(11)"></i><i class="fa fa-close" style="display: none; font-size: 10px; margin-left: 5px; color: red;" id="removepppoe11" onclick="deletetableRowpppoe(11)"></i><input hidden="" id="row11" value="11"></div>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <table class="borderlesstab" id="dhcptab" align="center" style="width: 400px; display: none;">
+            <tbody>
+               <tr>
+                  <td width="200px" title="Hostname to send when requesting DHCP">Hostname</td>
+                  <td width="200px"><input type="text" class="text" id="hostname" name="hostname" value="" maxlength="32" onkeypress="return avoidSpace(event);" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td title="Client ID to send when requesting DHCP">Client ID</td>
+                  <td><input type="text" class="text" id="clientid" name="clientid" value="" maxlength="32" onkeypress="return avoidSpace(event);" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td title="Vendor Class to send when requesting DHCP">Vendor Class</td>
+                  <td><input type="text" class="text" id="vendorid" name="vendorid" value="" maxlength="32" onkeypress="return avoidSpace(event);" style="display:inline block;"></td>
+               </tr>
+               <tr>
+                  <td>MTU</td>
+                  <td><input type="number" name="dhcpmtu" id="dhcpmtu" class="text" value="" placeholder="1500" min="1" max="9000" onkeypress="return avoidSpace(event)" onfocusout="validateRange('dhcpmtu',false,'MTU')"></td>
+               </tr>
+               <tr>
+                  <td>Metric</td>
+                  <td><input type="number" name="dhcpmetric" id="dhcpmetric" placeholder="0" value="" min="0" max="255" class="text" onkeypress="return avoidSpace(event)" onfocusout="validateRange('dhcpmetric',false,'Metric')"></td>
+               </tr>
+               <tr>
+                  <td>Default Route</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="dhcpdfltrte" id="dhcpdfltrte" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>Obtain DNS Servers Automatically</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="dhcpautodns" id="dhcpautodns" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+      <script>
+	  displayActiveTable('wanproto');
+	  addIPRowAndChangeIcon('statictab', 1);
+	  fillIProw(iprows,'192.168.2.1','255.255.255.0');
+	  findLastRowAndDisplayRemoveIcon();
+	  addIPRowAndChangeIconstatic(5);
+	  findLastRowAndDisplayRemoveIconstatic();
+	  addIPRowAndChangeIcondhcp(10);
+	  findLastRowAndDisplayRemoveIcondhcp();
+	  addIPRowAndChangeIconpppoe(10);
+	  findLastRowAndDisplayRemoveIconpppoe();
+	  </script>
+   </body>
+</html>

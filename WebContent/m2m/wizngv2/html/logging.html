@@ -1,0 +1,118 @@
+<html>
+   <head>
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <link href="css/solid.css" rel="stylesheet">
+      <link href="css/v4-shims.css" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+      <style></style>
+      <script type="text/javascript" src="js/common.js"></script>
+	  <script type="text/javascript">
+	  function validatelogging() {
+	var alertmsg = "";
+	var systmlogsrvr = document.getElementById("logserver");
+	var valid = validatenameandip("logserver", false, "External System Log Server");
+	if (!valid) {
+		if (systmlogsrvr.value.trim() == "") alertmsg += "External System Log Server should not be empty\n";
+		else alertmsg += "External System Log Server is not valid\n";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=LoggingProcess.cgi" method="post" onsubmit="return validatelogging()">
+         <br>
+         <p class="style5" align="center">Logging</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" style="width:600px;" align="center">
+            <tbody>
+               <tr>
+                  <th width="300px">Parameters</th>
+                  <th width="300px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>Local Logging</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="logging" name="logging" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>System Log Buffer Size (KiB)</td>
+                  <td><input type="number" class="text" name="logbufrsize" id="logbufrsize" value="64" min="1" max="65535"></td>
+               </tr>
+               <tr>
+                  <td>Remote Logging</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="log_remote" name="log_remote" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>External System Log Server</td>
+                  <td><input type="text" class="text" name="logserver" id="logserver" value="" onfocusout="validatenameandip('logserver',false,'External System Log Server')"></td>
+               </tr>
+               <tr>
+                  <td>External System Log Server Port</td>
+                  <td><input type="number" class="text" name="logservrport" id="logservrport" value="" min="1" max="65535"></td>
+               </tr>
+               <tr>
+                  <td>External System Log Server Protocol</td>
+                  <td>
+                     <select class="text" id="logservrprotocol" name="logservrprotocol">
+                        <option value="1" selected="">UDP</option>
+                        <option value="2">TCP</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Log Output Level</td>
+                  <td>
+                     <select class="text" id="logotptlvl" name="logotptlvl">
+                        <option value="8" selected="">Debug</option>
+                        <option value="7">Info</option>
+                        <option value="6">Notice</option>
+                        <option value="5">Warning</option>
+                        <option value="4">Error</option>
+                        <option value="3">Critical</option>
+                        <option value="2">Alert</option>
+                        <option value="1">Emergency</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Cron Log Level</td>
+                  <td>
+                     <select class="text" id="cronloglevl" name="cronloglevl">
+                        <option value="5" selected="">Debug</option>
+                        <option value="8">Normal</option>
+                        <option value="9">Warning</option>
+                     </select>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Cellular PPP Logging</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="ppploglevel" name="ppploglevel" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>WAN PPPoE Logging</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" id="pppoeloglevel" name="pppoeloglevel" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>IPSec Log Level</td>
+                  <td>
+                     <select class="text" id="ipsecloglevel" name="ipsecloglevel" style="width:260px">
+                        <option value="-1" selected="">Absolutely silent</option>
+                        <option value="0">Very basic auditing logs</option>
+                        <option value="1">Generic control flow with errors</option>
+                        <option value="2">More detailed debugging control flow</option>
+                        <option value="3">Include RAW data dumps in hex</option>
+                        <option value="4">Include sensitive material in dumps</option>
+                     </select>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+   </body>
+</html>

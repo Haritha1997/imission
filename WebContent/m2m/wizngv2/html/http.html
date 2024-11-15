@@ -1,0 +1,66 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+      <script type="text/javascript" src="js/common.js"></script>
+      <script type="text/javascript">
+	  function validateHttpConfig() {
+	var alertmsg = "";
+	var portobj = document.getElementById("port");
+	var stimeobj = document.getElementById("stimer");
+	var rtimeobj = document.getElementById("rtimer");
+	var valid = validateRange("port", "Port");
+	if (!valid) {
+		if (portobj.value.trim() == "") alertmsg += "The Port Number should not be empty\n";
+		else alertmsg += "The Port Number is not valid\n";
+	}
+	var valid = validateRange("stimer", "Session Timer");
+	if (!valid) {
+		if (stimeobj.value.trim() == "") alertmsg += "The Session Timer should not be empty\n";
+		else alertmsg += "The Session Timer is not valid\n";
+	}
+	var valid = validateRange("rtimer", "Refresh Timer");
+	if (!valid) {
+		if (rtimeobj.value.trim() == "") alertmsg += "The Refresh Timer should not be empty\n";
+		else alertmsg += "The Refresh Timer is not valid\n";
+	}
+	if (alertmsg.trim().length == 0) return true;
+	else {
+		alert(alertmsg);
+		return false;
+	}
+}
+	  </script>
+   </head>
+   <body>
+      <form action="Nomus.cgi?cgi=HTTPProcess.cgi" method="post" onsubmit="return validateHttpConfig()">
+         <br>
+         <p class="style5" align="center">HTTP Configuration</p>
+         <br>
+         <table class="borderlesstab" id="WiZConf" align="center">
+            <tbody>
+               <tr>
+                  <th width="200px">Parameters</th>
+                  <th width="200px">Configuration</th>
+               </tr>
+               <tr>
+                  <td>HTTPS</td>
+                  <td><label class="switch" style="vertical-align:middle"><input type="checkbox" name="activation" id="activation" style="vertical-align:middle"><span class="slider round"></span></label></td>
+               </tr>
+               <tr>
+                  <td>Listen Port</td>
+                  <td><input type="number" class="text" id="port" name="port" value="80" min="1" max="65535" onfocusout="validateRange('port','Port')"></td>
+               </tr>
+               <tr>
+                  <td>Session Timer (Secs)</td>
+                  <td><input type="number" class="text" id="stimer" name="stimer" value="600" min="1" max="86400" onfocusout="validateRange('stimer','Session Timer')"></td>
+               </tr>
+               <tr>
+                  <td>Refresh Timer (Secs)</td>
+                  <td><input type="number" class="text" id="rtimer" name="rtimer" value="5" min="1" max="3600" onfocusout="validateRange('rtimer','Refresh Timer')"></td>
+               </tr>
+            </tbody>
+         </table>
+         <div align="center"><input type="submit" name="Apply" value="Apply" style="display:inline block" class="button"><input type="submit" name="Save" value="Save &amp; Apply" style="display:inline block" class="button"></div>
+      </form>
+   </body>
+</html>
